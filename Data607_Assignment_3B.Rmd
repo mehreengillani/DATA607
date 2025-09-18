@@ -1,0 +1,116 @@
+---
+title: "Assignment_3B_Updated"
+author: "Mehreen Ali Gillani"
+date: "2025-09-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+                              This is a markdown file for DATA607 Assignment_3B. 
+
+Assignment requirements:
+
+Find (or ask an LLM to generate!) a dataset that includes time series for two or more separate items.  For example, you could use end of day stock or cryptocurrency prices since Jan 1, 2022 for several instruments.
+Use window functions (in SQL or dplyr) to calculate the year-to-date average and the six-day moving averages for each item.
+
+
+Step 1: Load required packages 
+```{r Load_packages}
+library(dplyr)
+library(slider)      # For moving averages
+library(tidyquant)   # To fetch stock data
+library(ggplot2)    # For data visualization
+library(tidyr)
+
+```
+
+Step 2: Get stock data (example with Apple and Microsoft):
+```{r Get_stock_data}
+stock_data <- tq_get(c("AAPL", "MSFT"), 
+                     from = "2022-01-01", 
+                     to = Sys.Date()) %>%
+  dplyr::select(symbol, date, close)
+```
+Print stock data
+```{r PRINT_STOCK_DATA}
+print(stock_data %>% filter(symbol == "AAPL") %>% head(20))
+
+print(stock_data %>% filter(symbol == "MSFT") %>% head(20))
+```
+
+
+Step 3: Calculate year-to-date (YTD) average using cummean():
+```{r}
+ytd_data <- stock_data %>%
+  group_by(symbol, year = format(date, "%Y")) %>%  # Group by symbol and year
+  arrange(date) %>%                                # Ensure dates are in order
+  mutate(ytd_avg = cummean(close)) %>%             # Cumulative mean within each year
+  
+  ungroup()
+
+```
+
+4. Calculate 6-day moving average using slide_dbl():
+
+```{r}
+final_data <- ytd_data %>%
+  group_by(symbol) %>%
+  mutate(moving_avg_6d = slider::slide_dbl(
+    close, 
+    mean, 
+    .before = 5,   # Look back 5 periods (current + 5 previous = 6 days)
+    .complete = FALSE  # Allow partial windows
+  )) %>%
+  ungroup()
+```
+5. View results for Apple and Microsoft
+```{r}
+cat("AAPL Data:\n")
+print(final_data %>% filter(symbol == "AAPL") %>% head(20))
+
+cat("\nMSFT Data:\n")
+print(final_data %>% filter(symbol == "MSFT") %>% head(20))
+```
+6.1 Plot for Apple stock price, YTD and moving average
+```{r}
+
+# Create plots for each Apple
+aapl_plot <- final_data %>%
+  filter(symbol == "AAPL") %>%
+  ggplot(aes(x = date)) +
+  geom_line(aes(y = close, color = "Daily Close"), linewidth = 0.7) +
+  geom_line(aes(y = ytd_avg, color = "YTD Average"), linewidth = 1.2) +
+  geom_line(aes(y = moving_avg_6d, color = "6-Day Moving Avg"), linewidth = 1.2) +
+  labs(title = "AAPL Stock Price with Averages",
+       x = "Date", y = "Price ($)",
+       color = "Metric") +
+  theme_minimal()
+print(aapl_plot)
+
+```
+
+
+6.2 Plot for Microsoft stock price, YTD average and 6-Days moving average
+```{r}
+msft_plot <- final_data %>%
+  filter(symbol == "MSFT") %>%
+  ggplot(aes(x = date)) +
+  geom_line(aes(y = close, color = "Daily Close"), linewidth = 0.7) +
+  geom_line(aes(y = ytd_avg, color = "YTD Average"), linewidth = 1.2) +
+  geom_line(aes(y = moving_avg_6d, color = "6-Day Moving Avg"), linewidth = 1.2) +
+  labs(title = "MSFT Stock Price with Averages",
+       x = "Date", y = "Price ($)",
+       color = "Metric") +
+  theme_minimal()
+print(msft_plot)
+```
+
+Conclusion:
+
+The plots revealed how different averaging techniques smooth data differently - YTD averages show longer-term trends while 6-day moving averages capture shorter-term momentum.
+Consistent alignment suggests stable trends.
+
+This assignment provided hands-on experience with essential techniques used in financial analysis, data science, and quantitative trading strategies.

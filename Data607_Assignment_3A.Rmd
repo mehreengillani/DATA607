@@ -1,0 +1,166 @@
+---
+title: "DATA607 Assignment_3A"
+author: "Mehreen Ali Gillani"
+date: "2025-09-16"
+output:
+  html_document:
+    highlight: pygments
+    theme: journal
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+                                    Global Baseline Estimates
+
+Problem statement: Most recommender systems use personalized algorithms like “content management” and “item-item collaborative filtering.” Sometimes non-personalized recommenders are also useful or necessary. One of the best non-personalized recommender system algorithms is the “Global Baseline Estimate.
+
+The job here is to use the survey data collected and write the R code that makes a movie recommendation using the Global Baseline Estimate algorithm
+
+```{r}
+# Load necessary libraries
+
+library(dplyr)
+library(tidyr)
+
+```
+
+
+Step 1. Create Movie Dataframe
+```{r create-movie-dataframe}
+# Create the movie_ratings dataframe
+movie_ratings <- data.frame(
+  Critic = c("Vivien", "Carrie", "Julie", "Drew"),
+  Gone_with_the_Wind = c(NA, 4, 2, 5),
+  Star_Wars = c(NA, 5, 5, 4),
+  Sound_of_Music = c(5, 4, 2, NA),
+  ET = c(4, 3, NA, NA),
+  stringsAsFactors = FALSE
+)
+
+# View the dataframe
+print(movie_ratings)
+```
+
+Step 2. Convert to long format data
+```{r}
+ratings_long <- movie_ratings %>%
+  pivot_longer(
+    cols = -Critic,
+    names_to = "Movie",
+    values_to = "Rating"
+  ) %>%
+  filter(!is.na(Rating)) %>%  # Remove missing ratings
+  rename(userId = Critic, movieId = Movie, rating = Rating)
+
+# View the long format data
+print(ratings_long)
+```
+
+Step 3: Calculate the Global Average Rating (μ)
+```{r}
+# Calculate the global average rating
+mu <- mean(ratings_long$rating, na.rm = TRUE)
+print(paste("Global average rating (μ):", round(mu, 3)))
+
+```
+
+Step 4: Calculate User Biases (bᵤ)
+```{r user_biases}
+user_biases <- ratings_long %>%
+  group_by(userId) %>%
+  summarize(b_u = mean(rating - mu, na.rm = TRUE))
+ 
+# View user biases
+print(user_biases)
+
+```
+
+Step 5: Calculate Movie Biases (bᵢ)
+```{r movie_biase}
+movie_biases <- ratings_long %>%
+  group_by(movieId) %>%
+  summarize(b_i = mean(rating - mu, na.rm = TRUE))
+
+# View movie biases
+print(movie_biases)
+
+```
+
+Step 6: Create All Possible User-Movie Combinations
+```{r}
+all_combinations <- expand.grid(
+  userId = unique(ratings_long$userId),
+  movieId = unique(ratings_long$movieId)
+)
+
+# View all combinations
+print(all_combinations)
+
+```
+
+Step 7: Generate Predictions for All Combinations
+Generated predictions for all possible critic-movie combinations using the formula:
+r̂ᵤᵢ = μ + bᵤ + bᵢ
+```{r}
+predictions <- all_combinations %>%
+  left_join(user_biases, by = "userId") %>%
+  left_join(movie_biases, by = "movieId") %>%
+  mutate(
+    # Handle cases where we don't have bias information
+    b_u = ifelse(is.na(b_u), 0, b_u),
+    b_i = ifelse(is.na(b_i), 0, b_i),
+    # Calculate predicted rating
+    predicted_rating = mu + b_u + b_i,
+    # Apply caps to ensure ratings are between 0 and 5
+    predicted_rating = pmax(0, pmin(5, predicted_rating)),
+    #round off to 2 numeric value after decimal 
+    predicted_rating = round(predicted_rating,2)
+  ) %>%
+  select(userId, movieId, predicted_rating)
+
+# View predictions
+print(predictions)
+```
+
+Step 8: Get Recommendations for Specific Users
+```{r}
+
+# Function to get top N recommendations for a user
+get_recommendations <- function(user_id, n = 2) {
+  user_predictions <- predictions %>%
+    filter(userId == user_id) %>%
+    arrange(desc(predicted_rating)) %>%
+    head(n)
+  
+  return(user_predictions)
+}
+
+# Get recommendations for each user
+users <- unique(ratings_long$userId)
+for(user in users) {
+  cat("\nTop recommendations for", user, ":\n")
+  print(get_recommendations(user))
+}
+
+```
+
+Step 9: Compare Predictions with Actual Ratings
+```{r}
+comparison <- ratings_long %>%
+  full_join(predictions, by = c("userId", "movieId")) %>%
+  rename(actual_rating = rating)
+
+# View comparison
+print(comparison)
+
+```
+
+
+
+Conclusion:
+This implementation demonstrated that even a simple non-personalized approach can provide meaningful recommendations by leveraging aggregate patterns in rating behavior. The global baseline model serves as an important benchmark in recommendation system evaluation - any more complex personalized algorithm should outperform this basic approach to be considered effective.
+
+The assignment successfully illustrated how to transform raw rating data into actionable recommendations using fundamental statistical concepts, providing a solid foundation for understanding more sophisticated recommendation techniques.
