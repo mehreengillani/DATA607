@@ -1,0 +1,267 @@
+---
+title: "Project1"
+author: "Mehreen Ali Gillani"
+date: "2025-09-20"
+output: html_document
+---
+# Topic: Chess Tournament Performance Analysis
+
+## Approach:
+  * Created structured player data with round-by-round results (W/L/D) and opponent matchups
+  * Calculated total points from game outcomes and average opponent ratings
+  * Generated visualizations to compare player performance against pre-tournament ratings
+  * Analyzed discrepancies between expected and actual performance based on rating tiers
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Step 1: Load Required Libraries
+```{r load_libraries}
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+library(forcats)
+library(kableExtra)
+```
+
+### Step 2: Create Sample Data with Round Results and opponents  
+
+```{r Create_sample_data}
+players_data <- data.frame(
+  Player = c("Gary Hua", "Alice Smith", "Bob Johnson", "Charlie Brown", "Diana Davis"),
+  State = c("ON", "CA", "TX", "NY", "FL"),
+  PreRating = c(1794, 1650, 1550, 1700, 1600),
+  R1_Result = c("W", "L", "D", "W", "L"),
+  R1_Opponent = c("Alice Smith", "Gary Hua", "Charlie Brown", "Bob Johnson", "Diana Davis"),
+  R2_Result = c("W", "W", "L", "D", "W"),
+  R2_Opponent = c("Bob Johnson", "Charlie Brown", "Gary Hua", "Alice Smith", "Diana Davis"),
+  R3_Result = c("D", "W", "W", "L", "L"),
+  R3_Opponent = c("Charlie Brown", "Diana Davis", "Alice Smith", "Gary Hua", "Bob Johnson"),
+  R4_Result = c("W", "D", "L", "W", "D"),
+  R4_Opponent = c("Diana Davis", "Bob Johnson", "Alice Smith", "Diana Davis", "Gary Hua"),
+  R5_Result = c("W", "W", "D", "L", "W"),
+  R5_Opponent = c("Charlie Brown", "Diana Davis", "Bob Johnson", "Alice Smith", "Charlie Brown"),
+  OpponentRatings = c(
+    "1650, 1550, 1700, 1600, 1700",
+    "1794, 1700, 1600, 1550, 1600",
+    "1794, 1794, 1650, 1650, 1550",
+    "1550, 1650, 1794, 1600, 1650",
+    "1600, 1600, 1550, 1794, 1700"
+  )
+)
+
+# Display the data
+
+players_data %>%
+  kable(format = "html", escape = FALSE) %>%  # Ensure HTML format and escape special characters if needed
+  kable_styling(
+    bootstrap_options = c("bordered", "striped", "condensed"),  # Add borders, striped rows, and compact spacing
+    position = "center", # Center the table on the page :cite[1]
+    font_size = 12,      # Adjust font size for better readability
+  )# %>%
+ # row_spec(0, bold = TRUE, background = "#f8f9fa")  # Style header row: bold text and light background
+
+```
+
+### Step 3: Calculate Total Points from Round Results:
+
+  for each W=win pt=1,
+  for each D=Draw pt=0.5,
+  for each L=Lost pt=0 aded in this list
+  
+```{r Calculate total points from round results}
+processed_data <- players_data %>%
+  mutate(
+    TotalPoints = (
+      (R1_Result == "W") + (R2_Result == "W") + (R3_Result == "W") + 
+      (R4_Result == "W") + (R5_Result == "W") +
+      (R1_Result == "D")*0.5 + (R2_Result == "D")*0.5 + 
+      (R3_Result == "D")*0.5 + (R4_Result == "D")*0.5 + 
+      (R5_Result == "D")*0.5
+    )
+  )
+# Display the data with calculated points
+processed_data %>%
+  kable(format = "html", escape = FALSE) %>%  # Ensure HTML format and escape special characters if needed
+  kable_styling(
+    bootstrap_options = c("bordered", "striped", "condensed"),  # Add borders, striped rows, and compact spacing
+    position = "center", # Center the table on the page :cite[1]
+    font_size = 12,      # Adjust font size for better readability
+  )
+```
+
+
+### Step 4: Calculate Average Opponent Rating:  
+
+AvgOpponentRating=sum(OpponentRatings)/total_number_of_rounds  
+
+
+```{r Calculate Average Opponent Rating}
+processed_data <- processed_data %>%
+  rowwise() %>%
+  mutate(
+    OpponentList = strsplit(OpponentRatings, ","),
+    AvgOpponentRating = mean(as.numeric(trimws(OpponentList)), na.rm = TRUE)
+  )
+
+# Display the data with average opponent rating
+processed_data_display <- processed_data  %>%
+select(Player, State, PreRating, TotalPoints, OpponentList, AvgOpponentRating)
+
+processed_data_display %>%
+  kable(format = "html", escape = FALSE) %>%  # Ensure HTML format and escape special characters if needed
+  kable_styling(
+    bootstrap_options = c("bordered", "striped", "condensed"),  # Add borders, striped rows, and compact spacing
+    position = "center", # Center the table on the page :cite[1]
+    font_size = 12,      # Adjust font size for better readability
+  )
+```
+
+### Step 5: Select Final Columns and Save to CSV  
+```{r Select final columns and save to CSV}
+final_data <- processed_data %>%
+  select(Player, State, TotalPoints, PreRating, AvgOpponentRating, 
+         R1_Result, R1_Opponent, R2_Result, R2_Opponent, 
+         R3_Result, R3_Opponent, R4_Result, R4_Opponent, 
+         R5_Result, R5_Opponent)
+
+# Save as CSV
+write.csv(final_data, "player_stats_with_rounds_and_opponents.csv", row.names = FALSE)
+
+```
+
+### Step 6: Read and Verify the CSV File  
+```{r}
+# Read the CSV file to verify it was saved correctly
+saved_data <- read.csv("player_stats_with_rounds_and_opponents.csv")
+
+```
+### Step 7: Create a Summary of Results by Player  
+```{r}
+player_summary <- saved_data %>%
+  select(Player, State, PreRating, TotalPoints, AvgOpponentRating)
+
+# Display player summary
+player_summary %>%
+  kable(format = "html", escape = FALSE) %>%  # Ensure HTML format and escape special characters if needed
+  kable_styling(
+    bootstrap_options = c("bordered", "striped", "condensed"),  # Add borders, striped rows, and compact spacing
+    position = "center", # Center the table on the page :cite[1]
+    font_size = 12,      # Adjust font size for better readability
+  )
+
+```
+
+### Step 8: Create a Detailed Round-by-Round View
+
+```{r}
+# Create a detailed round-by-round view
+round_details <- saved_data %>%
+  select(Player, starts_with("R")) %>%
+  pivot_longer(
+    cols = -Player,
+    names_to = c("Round", ".value"),
+    names_sep = "_"
+  ) %>%
+  arrange(Player, Round)
+
+# Display round details
+round_details %>%
+  kable(format = "html", escape = FALSE) %>%  # Ensure HTML format and escape special characters if needed
+  kable_styling(
+    bootstrap_options = c("bordered", "striped", "condensed"),  # Add borders, striped rows, and compact spacing
+    position = "center", # Center the table on the page :cite[1]
+    font_size = 12,      # Adjust font size for better readability
+  )
+
+```
+
+### Plot Players by Total Points (Highest to Lowest)
+```{r}
+# Read the data
+player_data <- read.csv("player_stats_with_rounds_and_opponents.csv")
+
+# Order players by total points (highest to lowest)
+player_data_ordered <- player_data %>%
+  arrange(desc(TotalPoints)) %>%
+  mutate(Player = fct_reorder(Player, TotalPoints))
+
+# Create the plot
+ggplot(player_data_ordered, aes(x = Player, y = TotalPoints, fill = TotalPoints)) +
+  geom_bar(stat = "identity") +
+  scale_fill_gradient(low = "lightblue", high = "darkblue") +
+  labs(title = "Player Performance by Total Points",
+       subtitle = "Ordered from highest to lowest points",
+       x = "Player",
+       y = "Total Points",
+       fill = "Points") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_text(aes(label = TotalPoints), vjust = -0.3, size = 3.5)
+```
+
+### Plot Comparing Player Pre-Rating vs Average Opponent Rating
+```{r}
+# Read the data
+player_data <- read.csv("player_stats_with_rounds_and_opponents.csv")
+
+# Prepare data for plotting
+rating_comparison <- player_data %>%
+  select(Player, PreRating, AvgOpponentRating) %>%
+  pivot_longer(cols = c(PreRating, AvgOpponentRating), 
+               names_to = "RatingType", 
+               values_to = "Rating") %>%
+  mutate(RatingType = factor(RatingType, 
+                             levels = c("PreRating", "AvgOpponentRating"),
+                             labels = c("Player's Rating", "Avg Opponent Rating")))
+
+# Order players by their pre-rating (highest to lowest)
+player_order <- player_data %>%
+  arrange(desc(PreRating)) %>%
+  pull(Player)
+
+rating_comparison <- rating_comparison %>%
+  mutate(Player = factor(Player, levels = player_order))
+
+# Create the comparison plot
+ggplot(rating_comparison, aes(x = Player, y = Rating, fill = RatingType)) +
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.8) +
+  scale_fill_manual(values = c("Player's Rating" = "steelblue", 
+                               "Avg Opponent Rating" = "darkorange")) +
+  labs(title = "Comparison of Player Ratings vs Average Opponent Ratings",
+       subtitle = "Ordered by player rating (highest to lowest)",
+       x = "Player",
+       y = "Rating",
+       fill = "Rating Type") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top") +
+  geom_text(aes(label = Rating, group = RatingType), 
+            position = position_dodge(width = 0.9), 
+            vjust = -0.5, size = 3)
+```
+
+### Rating vs Performance Insights
+  * Gary Hua: Highest pre-rating (1794) and highest tournament points - demonstrating expected dominance from the top-rated player
+  * Charlie Brown: Second-highest pre-rating (1700) but finished third in points - underperformed relative to rating expectations
+  * Alice Smith: Third-highest pre-rating (1650) but achieved second-highest points - exceeded expectations by outperforming higher-rated competitors
+
+*Italicized item* This analysis reveals that while rating generally predicts performance, notable exceptions occur where players either exceed or fall short of their expected results based on pre-tournament ratings. 
+
+## Summary of Achievements in the CSV File
+We have successfully created a comprehensive chess tournament data analysis CSV file that includes:
+
+### Player Performance Metrics
+  * Player Identification: Name and state for each participant
+  * Skill Assessment: Pre-tournament rating for each player
+  * Performance Measurement: Total points calculated from round results
+
+### Competition Quality: 
+  * Average rating of opponents faced
+
+#### Detailed Round-by-Round Analysis
+  * Results Tracking: Win (W), Loss (L), or Draw (D) for each of the 5 rounds
+  * Opponent Identification: Specific opponent faced in each round
+  * Complete Match History: Full record of all games played in the tournament
