@@ -1,0 +1,213 @@
+---
+title: "Assignment 5A_Airline_Delays"
+author: "Mehreen Ali Gillani"
+date: "2025-09-24"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Assignment – Tidying and Transforming Data
+
+### Step 1: Create connection with MySQL
+```{r dbconnection, include=FALSE}
+library(DBI)
+library(RMySQL)
+library(scales)  # for percent_format()
+library(dplyr)
+library(tidyr)
+
+con <- dbConnect(
+  RMySQL::MySQL(),
+  user = "root",
+  password = "1234",
+  dbname = "flightdb",
+  host = "localhost"
+)
+
+```
+
+
+```{r}
+#Above code will be hidden for password privacy purpose
+#alternative way to read from csv file 
+#url = 'https://raw.githubusercontent.com/mehreengillani/DATA607/refs/heads/main/flight_info.csv'
+#flights <- read.csv(url)
+#head(flights)
+
+```
+### Step 2: load data from MySQL
+```{r}
+flights <- dbReadTable(con, "flight_delays")
+flights
+```
+### Step 3: Check null values, show summary of numeric columns, find unique values for categorical variables
+```{r}
+# Check for missing values in the dataset
+colSums(is.na(flights))  # number of NAs per column
+
+# Summary for numeric columns 
+summary(flights[sapply(flights, is.numeric)])
+
+#print unique values for airlines
+unique(flights$airline)
+
+#printunique values for airports
+unique(flights$airport)
+```
+There are no null values. There are two airlines and five destination airports.
+Max number of delayed flights are 415 with average of 128. Max number of on time flights are 4840 with mean value of 971. 
+
+### Step 4: Tidy the data (wide → long)
+```{r}
+
+flights_long <- flights %>%
+  pivot_longer(cols = c(ontime, delay),
+               names_to = "status",
+               values_to = "count")
+flights_long
+```
+ 
+
+### Step 5: Calculate delay rate per airline
+```{r}
+airline_delay_summary <- flights %>%
+  group_by(airline) %>%
+  summarise(
+    total_flights = sum(ontime + delay),
+    total_delays  = sum(delay),
+    delay_rate    =  total_delays / total_flights, 
+    on_time_rate    = sum(ontime) / total_flights
+  ) %>%
+  arrange(desc(delay_rate))
+
+#arrival delay rates per airline
+airline_delay_summary
+```
+
+### Step 6: Visualization 
+#### 6.1 Arrival Delay vs On-time flights percentage by Airline
+```{r}
+library(ggplot2)
+
+# Convert to long format for plotting
+airline_long <- airline_delay_summary %>%
+  pivot_longer(cols = c(delay_rate, on_time_rate),
+               names_to = "status",
+               values_to = "rate")
+
+# Plot side-by-side bars (with % in title and axis label)
+ggplot(airline_long, aes(x = airline, y = rate, fill = status)) +
+  geom_col(position = position_dodge(width = 0.6), width = 0.6) +
+  geom_text(aes(label = paste0(round(rate*100, 1), "%")),
+            position = position_dodge(width = 0.6),
+            vjust = -0.5, size = 3) +
+  labs(title = "Arrival Delay vs On-time Percentage by Airline",
+       x = "Airline",
+       y = "Percentage") +   # changed here
+  scale_y_continuous(labels = scales::percent_format(), limits = c(0, 1.1)) +
+  scale_fill_manual(values = c("delay_rate" = "darkblue", "on_time_rate" = "skyblue"),
+                    labels = c("Delay", "On-time")) +
+  theme_minimal()
+
+
+```
+```{r}
+# Calculate total flights, delays, and rates per destination airport
+airport_summary <- flights %>%
+  group_by(airport) %>%
+  summarise(
+    total_flights = sum(ontime + delay),
+    total_delays  = sum(delay),
+    total_ontime  = sum(ontime),
+    delay_rate    = total_delays / total_flights,
+    on_time_rate  = total_ontime / total_flights
+  ) %>%
+  arrange(desc(delay_rate))
+
+airport_summary
+```
+
+#### 6.2 Arrival Delay vs On-time flights percentage by Destination Airport
+```{r}
+# Convert to long format for plotting
+airport_long <- airport_summary %>%
+  pivot_longer(cols = c(delay_rate, on_time_rate),
+               names_to = "status",
+               values_to = "rate")
+ggplot(airport_long, aes(x = airport, y = rate, fill = status)) +
+  geom_col(position = position_dodge(width = 0.6), width = 0.6) +
+  geom_text(aes(label = paste0(round(rate*100, 1), "%")),
+            position = position_dodge(width = 0.6),
+            vjust = -0.5, size = 3) +
+  labs(title = "Arrival Delay vs On-time flights percentage by Destination Airport",
+       x = "Destination Airport",
+       y = "Percentage") +
+  scale_y_continuous(labels = percent_format(), limits = c(0, 1.1)) +
+  scale_fill_manual(values = c("delay_rate" = "black", "on_time_rate" = "grey"),
+                    labels = c("Delay", "On-time")) +
+  theme_minimal()
+
+
+```
+
+<br>
+
+#### 6.3 Delay vs On-time flights percentage by Airline and Destination Airport
+
+```{r}
+airline_airport_summary <- flights %>%
+  group_by(airline, airport) %>%
+  summarise(
+    total_flights = sum(ontime + delay),
+    total_delays  = sum(delay),
+    total_ontime  = sum(ontime),
+    delay_rate    = total_delays / total_flights,
+    on_time_rate  = total_ontime / total_flights
+  ) %>%
+  ungroup()
+
+# Reshape for plotting
+airline_airport_long <- airline_airport_summary %>%
+  pivot_longer(cols = c(delay_rate, on_time_rate),
+               names_to = "status",
+               values_to = "rate")
+
+# Plot grouped bars
+ggplot(airline_airport_long, aes(x = airport, y = rate, fill = status)) +
+  geom_col(position = position_dodge(width = 0.8), width = 0.7) +
+  geom_text(aes(label = paste0(round(rate*100, 1), "%")),
+            position = position_dodge(width = 0.8),
+            hjust = -0.1, size = 3) +  # hjust places text in line horizontally
+  facet_wrap(~airline, ncol = 1) +
+  labs(title = "Delay vs On-time flights percentage by Airport and Airline",
+       x = "Destination Airport",
+       y = "percentage") +
+  scale_y_continuous(labels = percent_format(), limits = c(0, 1.1)) +
+  scale_fill_manual(values = c("delay_rate" = "black", "on_time_rate" = "grey"),
+                    labels = c("Delay", "On-time")) +
+  coord_flip() +  # flip axes to make horizontal bars
+  theme_minimal()
+
+```
+<br>
+
+###  Conclusion:
+
+  * The total number of flights for AM_WEST is more than double that of ALASKA.
+
+  * ALASKA has a higher overall delay percentage than AM_WEST by approximately 2.3%.
+
+  * Phoenix handles the highest number of flights, followed by Seattle in second place.
+
+  * San Francisco has the highest delay rate among destinations, with Seattle following.
+
+  * Phoenix has the lowest flight delay rate across all destinations.
+
+  * The ALASKA flights to Phoenix have the lowest individual delay rate, followed closely by AM_WEST flights to Phoenix.
+
+  * AM_WEST flights to San Francisco experience the highest delay rate, followed by ALASKA flights to San Francisco.
