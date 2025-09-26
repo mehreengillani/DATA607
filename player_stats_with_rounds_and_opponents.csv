@@ -1,0 +1,11 @@
+Player,State,PreRating,R1_Result,R1_Opponent,R2_Result,R2_Opponent,R3_Result,R3_Opponent,R4_Result,R4_Opponent,R5_Result,R5_Opponent,R6_Result,R6_Opponent,R7_Result,R7_Opponent
+Gary Hua,ON,1794,W,Alice Smith,W,Bob Johnson,D,Charlie Brown,W,Diana Davis,W,Charlie Brown,W,Bob Johnson,L,Alice Smith
+Alice Smith,CA,1650,L,Gary Hua,W,Charlie Brown,W,Diana Davis,D,Bob Johnson,W,Diana Davis,W,Charlie Brown,L,Bob Johnson
+Bob Johnson,TX,1550,D,Charlie Brown,L,Gary Hua,W,Alice Smith,L,Alice Smith,D,Phil Foden,L,Diana Davis,W,Charlie Brown
+Charlie Brown,NY,1700,W,Bob Johnson,D,Alice Smith,L,Gary Hua,W,Diana Davis,L,Alice Smith,L,Harry Kane,D,Diana Davis
+Diana Davis,FL,1600,L,Harry Kane,W,Jordan Henderson,L,Bob Johnson,D,Gary Hua,W,Charlie Brown,W,Jordan Henderson,W,Alice Smith
+Harry Kane,NY,1350,W,Gary Hua,D,Jordan Henderson,W,Jordan Henderson,W,Jack Grealish,W,Gary Hua,L,Raheem Sterling,D,Gary Hua
+Jordan Henderson,FL,1460,L,Alice Smith,L,Raheem Sterling,L,Raheem Sterling,D,Phil Foden,W,Alice Smith,D,Alice Smith,L,Charlie Brown
+Raheem Sterling,CA,1975,D,Alice Smith,W,Jack Grealish,D,Jack Grealish,L,Gary Hua,D,Harry Kane,W,Phil Foden,W,Bob Johnson
+Jack Grealish,IL,1190,W,Charlie Brown,D,Phil Foden,W,Jordan Henderson,W,Alice Smith,L,Charlie Brown,D,Jordan Henderson,D,Diana Davis
+Phil Foden,IL,1450,L,Diana Davis,L,Alice Smith,D,Gary Hua,D,Bob Johnson,W,Diana Davis,L,Raheem Sterling,W,Gary Hua
