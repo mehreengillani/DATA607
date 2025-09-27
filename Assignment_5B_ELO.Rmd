@@ -1,0 +1,164 @@
+---
+title: "Assignment_5A_ELO"
+author: "Mehreen Ali Gillani"
+date: "2025-09-26"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Step 1: Load Required Libraries
+```{r load_libraries}
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+
+```
+
+
+### Step 2: Read csv from github 
+
+```{r Create_sample_data}
+url='https://raw.githubusercontent.com/mehreengillani/DATA607/refs/heads/main/player_stats_with_rounds_and_opponents.csv'
+data = read.csv(url)
+data
+```
+
+
+### Step 3: Prepare the data - long format
+```{r}
+# Gather round results and opponents
+df_long <- data %>%
+  pivot_longer(
+    cols = starts_with("R"),
+    names_to = c("Round", ".value"),
+    names_pattern = "(R\\d+)_(.*)"
+  )
+
+# Check the new structure
+head(df_long)
+```
+
+
+### Step 4: Merge opponent ratings 
+
+```{r}
+# For each round, get the opponent's PreRating
+df_long <- df_long %>%
+  left_join(data %>% select(Player, PreRating), by = c("Opponent" = "Player")) %>%
+  rename(OpponentRating = PreRating.y, PlayerRating = PreRating.x)
+head(df_long)
+```
+
+
+### Step 5: Define Elo expected score formula
+
+The expected score in the Elo system is calculated as $E_A = \frac{1}{1 + 10^{(R_B - R_A)/400}}$ for player A against player B.
+
+```{r}
+expected_score <- function(R_a, R_b) {
+  1 / (1 + 10^((R_b - R_a)/400))
+}
+
+df_long <- df_long %>%
+  mutate(Expected = expected_score(PlayerRating, OpponentRating))
+
+head(df_long)
+```
+
+
+### Step 6: convert result to numeric value
+```{r}
+df_long <- df_long %>%
+  mutate(Score = case_when(
+    Result == "W" ~ 1,
+    Result == "D" ~ 0.5,
+    Result == "L" ~ 0,
+    TRUE ~ NA_real_   # in case of typos like 'Wthi'
+  ))
+```
+
+
+### Step 7: Compute post rating after each round
+```{r}
+# K-factor
+K <- 32
+
+df_long <- df_long %>%
+  mutate(post_rating = PlayerRating + K * (Score - Expected))
+
+colnames(df_long)
+
+```
+
+### Step 8: Summarize total expected vs actual
+```{r}
+player_summary <- df_long %>%
+  group_by(Player) %>%
+  summarise(
+    TotalExpected = sum(Expected, na.rm = TRUE),
+    TotalActual = sum(Score, na.rm = TRUE),
+    Difference = TotalActual - TotalExpected
+  ) %>%
+  arrange(desc(Difference))
+
+player_summary
+
+```
+  <br>
+  * Difference > 0 → overperformed<br>
+  * Difference < 0 → underperformed<br>
+  
+### Step 9: Top over- and under-performers
+
+```{r}
+top_over <- player_summary %>% top_n(5, Difference)
+top_under <- player_summary %>% top_n(-5, Difference)
+
+top_over
+top_under
+
+```
+
+### Step 10: Visualiztion 
+
+```{r}
+library(ggplot2)
+
+
+ggplot(player_summary, aes(x = reorder(Player, Difference), y = Difference, fill = Difference > 0)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  scale_fill_manual(values = c("maroon", "darkblue"), labels = c("Underperformed", "Overperformed")) +
+  labs(
+    title = "Player Performance vs Expected Score",
+    x = "Player",
+    y = "Performance Difference (Actual - Expected)",
+    fill = "Performance"
+  ) +
+  theme_minimal()
+
+```
+
+## Conclusions:
+
+### Overperformers
+
+  * Jack Grealish, Harry Kane, Phil Foden, Alice Smith, Diana Davis, Gary Hua, Jordan Henderson, Bob Johnson all scored more than their expected points.
+  * Jack Grealish had the highest overperformance (Difference ≈ 3.71), meaning he scored far above what was expected based on his initial rating.
+  * Harry Kane also significantly overperformed (Difference ≈ 3.35).
+
+### Underperformers
+
+  * Charlie Brown and Raheem Sterling are the main underperformers.
+  * Raheem Sterling had the largest underperformance (Difference ≈ -1.93), scoring much lower than expected.
+  * Charlie Brown also underperformed (Difference ≈ -1.38), earning fewer points than predicted by his rating.
+  
+### General Insights
+
+  * Players with high pre-ratings (like Raheem Sterling) may underperform if the competition is tougher than expected.
+  * Players with moderate pre-ratings (like Jack Grealish and Harry Kane) can exceed expectations with consistent wins.
+  * Overperformance does not always correlate with high initial rating—some lower-rated players like Alice Smith and Diana Davis still slightly exceeded their expected scores.
+  * The Difference metric effectively identifies who performed above or below their expected Elo-based score, which can inform coaching decisions or player rankings.
