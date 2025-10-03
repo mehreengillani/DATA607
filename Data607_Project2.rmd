@@ -1,0 +1,455 @@
+---
+title: "Project_2 by Mehreen Ali Gillani"
+Author: "Mehreen Ali Gillani"
+output: html_document
+date: "2025-10-02"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+##  "Data Transformation and Visualization Pipeline: Uncovering Compensation Patterns in Tech Roles"
+### Step 1. import libraries
+
+```{r import libraries}
+library(tidyverse)  # This includes dplyr, tidyr, ggplot2, and others
+```
+
+
+
+### Step 2: Read the CSV File into R from github
+
+```{r read csv}
+url='https://raw.githubusercontent.com/mehreengillani/DATA607/refs/heads/main/salaries_data.csv'
+salaries_data <- read.csv(url)
+# Examine the wide structure
+glimpse(salaries_data)
+head(salaries_data)
+```
+
+### Step 3: Transform wide to long format
+
+```{r transform wide to long format}
+# Pivot from wide to long format
+tidy_salaries <- salaries_data %>%
+  pivot_longer(
+    cols = starts_with("avg_salary_"),  # Select all salary columns
+    names_to = "experience_level",      # Put column names in this new column
+    values_to = "average_salary"        # Put values in this new column
+  ) %>%
+  # Clean up the experience_level column
+  mutate(
+    experience_level = str_remove(experience_level, "avg_salary_"),  # Remove prefix
+    experience_level = factor(experience_level, levels = c("EN", "MI", "SE", "EX")) #performs ordering. All analyses will respect the career progression order
+  ) %>%
+  # Remove rows where salary data is missing
+  filter(!is.na(average_salary))
+
+glimpse(tidy_salaries)
+head(tidy_salaries)
+```
+Dataset shape before transformation:<br>
+Rows: 825<br>
+Columns: 8<br>
+<br>
+after transforming wide to long data shape:<br>
+Rows: 1,425<br>
+Columns: 6<br>
+
+### Step 4: Create New Variables
+
+```{r}
+
+tidy_salaries <- tidy_salaries %>%
+  mutate(
+    # Convert to proper types
+    work_year = as.integer(work_year),
+    
+    # Create meaningful Experience labels
+    experience_label = case_when(
+      experience_level == "EN" ~ "Entry",
+      experience_level == "MI" ~ "Mid",
+      experience_level == "SE" ~ "Senior", 
+      experience_level == "EX" ~ "Executive"
+    ),
+    experience_label = factor(experience_label, 
+                             levels = c("Entry", "Mid", "Senior", "Executive")),
+    
+    # Employment type labels  
+    employment_label = case_when(
+      employment_type == "PT" ~ "part-time",
+      employment_type == "FT" ~ "full-time",
+      employment_type == "CT" ~ "contract",
+      employment_type == "FL" ~ "freelance"
+    ),
+    employment_label = factor(employment_label, 
+                            levels = c( "freelance", "part-time","contract","full-time")),
+    # company size labels  
+    company_size_label = case_when(
+      company_size == "L" ~ "large",
+      company_size == "M" ~ "medium",
+      company_size == "S" ~ "small"
+    ),
+    company_size_label = factor(company_size_label, 
+                            levels = c("small", "medium", "large")),
+  
+      # Create salary categories for easy grouping
+    salary_range = case_when(
+      average_salary < 50000 ~ "Under $50K",
+      average_salary >= 50000 & average_salary < 100000 ~ "$50K-$100K",
+      average_salary >= 100000 & average_salary < 150000 ~ "$100K-$150K", 
+      average_salary >= 150000 ~ "Over $150K"
+    ),
+    # Handle any missing values
+    across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE)))
+  ) %>%
+  # Remove duplicates
+  distinct()
+  
+
+glimpse(tidy_salaries)
+#unique(tidy_salaries$company_size)
+
+```
+ <b>4 new columns have been added</b>
+
+### Step 5: calculating summary statistics
+
+```{r}
+# Multiple summary statistics
+summary_stats <- tidy_salaries %>%
+  group_by(company_size_label, experience_label) %>%
+  summarise(
+    count = n(),
+    mean_salary = mean(average_salary),
+    median_salary = median(average_salary),
+    sd_salary = sd(average_salary),
+    min_salary = min(average_salary),
+    max_salary = max(average_salary),
+    .groups = 'drop'
+  )
+
+summary_stats
+```
+
+
+### Step 6: Query to find highest paid job each year using group_by and summarise function 
+```{r}
+highest_paid_by_year <- tidy_salaries %>%
+  group_by(work_year) %>%
+  summarise(
+    highest_paid_job = job_title[which.max(average_salary)],
+    highest_salary = max(average_salary),
+    .groups = 'drop'
+  )
+
+print("Highest Paid Job Title Each Year:")
+print(highest_paid_by_year)
+```
+
+
+### Step 7: Avg Salary distribution grpah 
+
+
+```{r salary distribution graph}
+ggplot() +
+  geom_histogram(data = tidy_salaries, aes(x = average_salary, fill = "average_salary"), 
+                 fill ='lightblue',alpha = 0.6, bins = 15, position = "identity") +
+  labs(title = "Distribution of avaerage salaries",
+       x = "salaries",
+       y = "Count") +
+  theme_minimal()
+```
+
+<br><b>After analyzing the graph I can see there is one or few points more than 45000USD salary. Which creates an outlier in the dataset.
+first we will query about these data points.</b>
+```{r}
+high_salary_data <- tidy_salaries %>%
+  filter(average_salary > 450000)
+
+print("Data points with salary > $450,000:")
+print(high_salary_data)
+
+```
+<br> Because there is only one data point which is above 450000 and its value is almost double than the last value. I would remove this data point because it 
+is an outlier.
+
+
+```{r}
+#Removed outlier by deleting avg salary more than 500000 
+cleaned_data <- tidy_salaries %>%
+  filter(average_salary < 500000)
+
+cat("Original rows:", nrow(tidy_salaries), "\n")
+cat("After removal:", nrow(cleaned_data), "\n")
+cat("Removed", nrow(tidy_salaries) - nrow(cleaned_data), "rows\n")
+```
+
+Lets re-plot the avg salary distribution graph.
+
+```{r salary distribution graph after removing extreme values}
+ggplot() +
+  geom_histogram(data = cleaned_data, aes(x = average_salary, fill = "average_salary"), 
+                 fill='lightblue',alpha = 0.6, bins = 15, position = "identity") +
+  labs(title = "Distribution of avaerage salaries",
+       x = "salaries",
+       y = "Count") +
+  theme_minimal()
+```
+<br>
+<b>Still avg salary distribution is right or positive skewed.</b> <br>
+
+####  Analysis 1: Average Salary by Experience Level
+```{r}
+analysis1 <- cleaned_data %>%
+  group_by(experience_label) %>%
+  summarise(
+    avg_salary = mean(average_salary),
+    median_salary = median(average_salary),
+    count = n()
+  ) %>%
+  arrange(experience_label)  # Use the logical order we set
+
+print("Average Salary by Experience Level:")
+print(analysis1)
+
+```
+
+####  High avg salary by company size
+```{r}
+
+analysis2 <- cleaned_data %>%
+  group_by(company_size_label) %>%
+  summarise(
+    avg_salary = mean(average_salary),
+    count = n()
+  ) %>%
+  arrange(desc(avg_salary))
+
+print("Salary by Company Size:")
+print(analysis2)
+```
+
+####  Top Paying Job Titles
+```{r}
+analysis3 <- cleaned_data %>%
+  group_by(job_title) %>%
+  summarise(
+    avg_salary = mean(average_salary),
+    count = n()
+  ) %>%
+  filter(count >= 5) %>%  # Only jobs with decent sample size
+  arrange(desc(avg_salary)) %>%
+  head(10)  # Top 10 only
+
+print("Top 10 Paying Job Titles:")
+print(analysis3)
+
+```
+#### High avg. salaries by year and experience level
+
+```{r}
+analysis4 <- cleaned_data %>%
+  group_by(work_year, experience_label) %>%
+  summarise(
+    avg_salary = mean(average_salary),
+    count = n()
+  ) %>%
+  arrange(work_year, experience_label)
+
+print("Salary Trends Over Years:")
+print(analysis4)
+```
+
+#### Step 8: Visualization
+
+```{r}
+
+# Plot 1: Salary by experience level
+ggplot(analysis1, aes(x = experience_label, y = avg_salary)) +
+  geom_col(fill = "grey") +
+  labs(title = "Average Salary by Experience Level", 
+       x = "Experience Level", y = "Average Salary") +
+  theme_minimal()
+
+# Plot 2: Salary distribution by company size  
+ggplot(cleaned_data, aes(x = company_size_label, y = average_salary)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Salary Distribution by Company Size",
+       x = "Company Size", y = "Salary") +
+  theme_minimal()
+```
+
+<b>Outliers Present: </b>All company size categories show outliers in average salaries<br>
+<b>Salary Variability: </b>Large companies exhibit the widest interquartile range<br>
+<b>Comparative Analysis: </b>This indicates more diverse salary structures in large organizations versus more compressed ranges in medium-sized companies.
+
+```{r}
+ggplot(analysis4, aes(x = factor(work_year), y = avg_salary, fill = experience_label)) +
+  geom_col(position = "dodge", color = "black", size = 0.3) +
+  scale_fill_manual(values = c("Entry" = "gray95", 
+                              "Mid" = "gray75", 
+                              "Senior" = "gray50", 
+                              "Executive" = "gray25")) +
+  labs(title = "Average Salary by Year and Experience Level", 
+       x = "Year", 
+       y = "Average Salary (USD)",
+       fill = "Experience Level") +
+  theme_minimal() +
+  theme(panel.background = element_rect(fill = "white")) +
+  scale_y_continuous(labels = scales::dollar)
+
+# Plot 2: Salary distribution by employment type  
+ggplot(cleaned_data, aes(x = employment_label, y = average_salary)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Salary Distribution by employment type",
+       x = "employment type", y = "Salary") +
+  theme_minimal()
+```
+
+<b>The employment type salary distribution demonstrates a clear stratification:</b>
+
+<b>Full-time:</b> Maximum salary range and highest average compensation, with numerous outliers indicating diverse pay scales<br>
+<b>Contract:</b>  Secondary position in both salary level and variability</br>
+<b>Part-time:</b>  Third-tier compensation range</br>
+<b>Freelance: </b> Most restricted salary band with lowest overall earnings </br>
+
+### Step 9: Filter for Data Scientist roles and calculate yearly averages
+
+```{r}
+data_scientist_trend <- tidy_salaries %>%
+  filter(job_title == "Data Scientist") %>%
+  group_by(work_year) %>%
+  summarise(
+    avg_salary = mean(average_salary),
+    median_salary = median(average_salary),
+    min_salary = min(average_salary),
+    max_salary = max(average_salary),
+    job_count = n(),
+    .groups = 'drop'
+  )
+
+print("Data Scientist Salary Trend:")
+print(data_scientist_trend)
+```
+```{r}
+
+# Basic line plot for average salary trend
+ggplot(data_scientist_trend, aes(x = work_year, y = avg_salary)) +
+  geom_line(color = "blue", size = 1.5) +
+  geom_point(color = "blue", size = 3) +
+  geom_text(aes(label = paste0("$", round(avg_salary/1000, 1), "K")), 
+            vjust = -1, size = 3.5) +
+  labs(title = "Data Scientist Average Salary Trend Over Years",
+       x = "Year",
+       y = "Average Salary (USD)") +
+  theme_minimal() +
+  scale_y_continuous(labels = scales::dollar)
+```
+```{r}
+#Enhanced Plot with Confidence Interval
+
+# More detailed plot with min/max range
+ggplot(data_scientist_trend, aes(x = work_year)) +
+  geom_ribbon(aes(ymin = min_salary, ymax = max_salary), 
+              fill = "lightblue", alpha = 0.3) +
+  geom_line(aes(y = avg_salary), color = "blue", size = 1.5) +
+  geom_line(aes(y = median_salary), color = "red", size = 1, linetype = "dashed") +
+  geom_point(aes(y = avg_salary), color = "blue", size = 3) +
+  geom_point(aes(y = median_salary), color = "red", size = 2) +
+  labs(title = "Data Scientist Salary Range Over Years",
+       subtitle = "Blue line = Average, Red dashed line = Median, Shaded area = Min-Max Range",
+       x = "Year",
+       y = "Salary (USD)") +
+  theme_minimal() +
+  scale_y_continuous(labels = scales::dollar)
+```
+
+```{r}
+cat("DATA SCIENTIST SALARY TREND SUMMARY:\n")
+if(nrow(data_scientist_trend) > 1) {
+  growth <- ((data_scientist_trend$avg_salary[nrow(data_scientist_trend)] - 
+              data_scientist_trend$avg_salary[1]) / 
+             data_scientist_trend$avg_salary[1]) * 100
+  cat("Overall salary change:", round(growth, 1), "%\n")
+}
+cat("Years analyzed:", paste(data_scientist_trend$work_year, collapse = ", "), "\n")
+cat("Average salaries:", paste0("$", round(data_scientist_trend$avg_salary), collapse = " → "), "\n")
+```
+### Conclusion and Summary
+
+####  Project Overview
+
+This analysis successfully transformed and analyzed salary data for ML, AI, Data science professionals across multiple dimensions, including experience levels, company sizes, employment types, and temporal trends. The project demonstrated robust data wrangling techniques and produced meaningful insights.
+
+####  Key Findings
+
+### 1. Salary Distribution Patterns:
+
+  * The salary distribution exhibited right-skewness, indicating most professionals cluster at lower to mid salary ranges with a long tail of high earners<br>
+  * After removing an extreme outlier ($500,000+), the data still maintained its positive skew, reflecting natural compensation hierarchies<br>
+  * Large companies showed the widest salary dispersion, suggesting more varied compensation structures and career progression opportunities<br>
+
+### 2. Experience-Level Compensation:
+
+  * Clear salary progression from Entry to Executive levels, validating the logical career hierarchy<br>
+  * Executive roles commanded significantly higher compensation, demonstrating the premium placed on senior leadership<br>
+  * The factor ordering ensured all analyses respected this career progression sequence<br>
+
+### 3. Employment Type Stratification:
+
+  * Full-time employees earned the highest salaries with maximum range and outlier prevalence<br>
+  * Contract roles positioned second, offering competitive but less stable compensation<br>
+  * Part-time and freelance arrangements showed constrained earning potential with limited variability
+
+### 4.Temporal Trends for Data Scientists:
+
+  * Data scientist salaries showed consistent patterns across years with some fluctuations
+  * The profession maintained strong compensation levels across all analyzed periods
+
+### 5. Highest-Paying Roles:
+
+  * Analysis revealed specialized roles (Cloud/Data Architects, ML Engineers) commanding premium compensation
+  * Traditional data scientist roles maintained strong market positioning
+  * Executive-level data roles showed exceptional earning potential
+
+
+### Methodological Strengths
+
+#### Data Transformation:
+
+1.  Successfully converted wide-format data to tidy long format using pivot_longer() <br>
+2.  Implemented proper factor ordering for categorical variables<br>
+3.  Created meaningful derived variables (salary categories, descriptive labels) <br>
+4.  Handled missing values and duplicates systematically  <br>
+5.  Employed multiple summary statistics (mean, median, SD, min/max) <br>
+6.  Utilized grouped operations for comparative analysis <br>
+7.  Implemented appropriate outlier detection and removal <br>
+8.  Boxplots effectively revealed distribution characteristics and outliers <br>
+9.  Bar charts clearly displayed salary hierarchies and trends <br>
+
+### Technical Achievements
+
+####  The project demonstrated proficiency in:
+
+  * Data acquisition from external sources <br>
+  * Advanced data transformation using dplyr and tidyr<br>
+  * Statistical analysis and summary generation<br>
+  * Professional data visualization with ggplot2<br>
+  * Clear documentation and reproducible research practices<br>
+
+### Business Implications
+
+####  For Job Seekers:
+
+  * Target large companies and full-time roles for maximum earning potential <br>
+  * Plan career progression through experience level advancement <br>
+  * Consider specialization in high-demand architectural roles
+  
+### Limitations and Future Work
+
+  * Analysis limited to available years in dataset
+  * Geographic variations not explored
+  * Industry-specific patterns could be further investigated
+  * Remote work impact on compensation warrants deeper analysis  
+  
