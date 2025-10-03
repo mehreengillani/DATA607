@@ -1,0 +1,826 @@
+"work_year","job_title","company_size","employment_type","avg_salary_EN","avg_salary_MI","avg_salary_SE","avg_salary_EX"
+2020,"AI Scientist","S","FT",45896,NA,NA,NA
+2020,"Azure Data Engineer","S","FT",1e+05,NA,NA,NA
+2020,"BI Data Analyst","M","FT",NA,98000,NA,NA
+2020,"Big Data Engineer","L","FT",70000,NA,NA,NA
+2020,"Big Data Engineer","M","FT",NA,NA,109024,NA
+2020,"Big Data Engineer","S","FT",NA,NA,114047,NA
+2020,"Business Data Analyst","L","CT",1e+05,NA,NA,NA
+2020,"Business Data Analyst","L","FT",NA,135000,NA,NA
+2020,"Business Data Analyst","M","FT",NA,95000,NA,NA
+2020,"Computer Vision Engineer","S","FL",NA,NA,60000,NA
+2020,"Data Analyst","L","FT",70299.6666666667,65879.5,NA,NA
+2020,"Data Analyst","M","FT",22809,NA,NA,NA
+2020,"Data Engineer","L","FT",54742,94628.2,117949.5,79833
+2020,"Data Engineer","S","FT",41689,59303,33511,NA
+2020,"Data Engineer","M","FT",NA,130800,NA,NA
+2020,"Data Scientist","M","FT",39916,98375.3333333333,190200,NA
+2020,"Data Scientist","S","FT",67078.75,56910.25,91237,NA
+2020,"Data Scientist","S","PT",21669,NA,NA,NA
+2020,"Data Scientist","L","FT",NA,72809.8,200142.666666667,312500
+2020,"Lead Data Analyst","L","FT",NA,87000,NA,NA
+2020,"Lead Data Engineer","M","FT",NA,56000,NA,NA
+2020,"Lead Data Engineer","S","FT",NA,NA,125000,NA
+2020,"Lead Data Scientist","L","FT",NA,115000,NA,NA
+2020,"Lead Data Scientist","S","FT",NA,NA,190000,NA
+2020,"Machine Learning Engineer","L","FT",250000,NA,150000,NA
+2020,"Machine Learning Engineer","S","FT",138000,NA,45618,NA
+2020,"Machine Learning Engineer","S","PT",15966,NA,NA,NA
+2020,"Machine Learning Infrastructure Engineer","M","FT",NA,50180,NA,NA
+2020,"Machine Learning Manager","L","FT",NA,NA,117104,NA
+2020,"Machine Learning Scientist","S","FT",NA,NA,260000,NA
+2020,"Principal Data Scientist","M","FT",NA,NA,148261,NA
+2020,"Product Data Analyst","S","FT",NA,20000,NA,NA
+2020,"Research Scientist","L","FT",42000,NA,NA,NA
+2020,"Research Scientist","M","FT",NA,450000,NA,NA
+2020,"Sales Data Analyst","M","CT",NA,60000,NA,NA
+2020,"Staff Data Analyst","L","CT",44753,NA,NA,NA
+2020,"Staff Data Analyst","M","FT",NA,NA,NA,15000
+2020,"Staff Data Scientist","M","FT",NA,NA,164000,NA
+2021,"AI Scientist","S","FT",18053,30000,NA,NA
+2021,"AI Scientist","L","FT",NA,NA,55000,NA
+2021,"Applied Data Scientist","L","FT",110037,54238,NA,NA
+2021,"Applied Machine Learning Scientist","L","FT",NA,423000,NA,NA
+2021,"Applied Machine Learning Scientist","M","FT",NA,38400,NA,NA
+2021,"Autonomous Vehicle Technician","M","FL",NA,45555,NA,NA
+2021,"BI Data Analyst","S","FT",55000,NA,NA,NA
+2021,"BI Data Analyst","L","FT",NA,36259,NA,150000
+2021,"BI Data Analyst","M","FT",NA,1e+05,NA,NA
+2021,"Big Data Architect","M","FT",NA,NA,99703,NA
+2021,"Big Data Engineer","L","FT",16228,22611,NA,NA
+2021,"Big Data Engineer","M","FT",NA,60000,NA,NA
+2021,"Big Data Engineer","S","FT",NA,18000,NA,NA
+2021,"Business Data Analyst","L","FT",59102,NA,NA,NA
+2021,"Business Data Analyst","M","PT",NA,56000,NA,NA
+2021,"Cloud Data Architect","L","FT",NA,NA,250000,NA
+2021,"Cloud Data Engineer","L","FT",NA,89294,NA,NA
+2021,"Cloud Data Engineer","S","FT",NA,NA,160000,NA
+2021,"Computer Vision Engineer","S","PT",28609,NA,NA,NA
+2021,"Computer Vision Engineer","M","FT",NA,NA,21453.5,NA
+2021,"Computer Vision Software Engineer","L","PT",19073,NA,NA,NA
+2021,"Computer Vision Software Engineer","M","FT",70000,NA,NA,NA
+2021,"Computer Vision Software Engineer","S","FT",NA,95746,NA,NA
+2021,"Data Analyst","L","FT",42028,73346.1428571429,131915.5,NA
+2021,"Data Analyst","M","FT",63034,90000,71786,NA
+2021,"Data Analyst","S","FT",75000,NA,81666.6666666667,NA
+2021,"Data Analytics Engineer","L","FT",NA,110000,79197,NA
+2021,"Data Analytics Engineer","M","FT",NA,NA,50000,NA
+2021,"Data Analytics Manager","L","FT",NA,NA,130000,NA
+2021,"Data Analytics Manager","M","FT",NA,NA,120000,NA
+2021,"Data Architect","L","FT",NA,166666.666666667,NA,NA
+2021,"Data Engineer","L","FT",57079.5,93573.6428571429,153880.333333333,NA
+2021,"Data Engineer","M","FT",43325,77647,142825.333333333,NA
+2021,"Data Engineer","L","FL",NA,20000,NA,NA
+2021,"Data Engineer","L","PT",NA,69741,NA,NA
+2021,"Data Engineer","S","FT",NA,66022,95916.5,NA
+2021,"Data Scientist","L","FT",53011.6,92061.9333333333,116702.153846154,181837.666666667
+2021,"Data Scientist","M","FT",64511.25,85904.5714285714,77684,107513
+2021,"Data Scientist","S","FT",89208.25,58734,127869,69741
+2021,"Data Specialist","L","FT",NA,NA,165000,NA
+2021,"Finance Data Analyst","L","FT",NA,NA,61896,NA
+2021,"Head of Data","L","FT",NA,NA,102839,232500
+2021,"Lead Data Analyst","L","FT",NA,19609,170000,NA
+2021,"Lead Data Engineer","L","FT",NA,NA,276000,NA
+2021,"Lead Data Engineer","S","FT",NA,NA,131580,NA
+2021,"Lead Data Scientist","L","FT",NA,NA,40570,NA
+2021,"Machine Learning Developer","L","FT",15000,NA,NA,NA
+2021,"Machine Learning Developer","S","FT",1e+05,NA,NA,NA
+2021,"Machine Learning Developer","M","FL",NA,NA,60000,NA
+2021,"Machine Learning Engineer","M","FT",23333.5,88654,82744,NA
+2021,"Machine Learning Engineer","S","FT",77750,65589.25,256000,NA
+2021,"Machine Learning Engineer","L","CT",NA,270000,NA,NA
+2021,"Machine Learning Engineer","L","FT",NA,40828,114034.2,NA
+2021,"Machine Learning Infrastructure Engineer","M","FT",NA,NA,195000,NA
+2021,"Machine Learning Research Engineer","M","FT",20000,NA,NA,NA
+2021,"Machine Learning Scientist","L","FT",225000,NA,225000,NA
+2021,"Machine Learning Scientist","S","FT",NA,NA,120000,NA
+2021,"Marketing Data Analyst","L","FT",NA,NA,88654,NA
+2021,"Marketing Data Engineer","L","FT",66970,NA,NA,NA
+2021,"Principal Data Analyst","M","FT",NA,NA,170000,NA
+2021,"Principal Data Engineer","L","FT",NA,NA,185000,NA
+2021,"Principal Data Engineer","M","FT",NA,NA,2e+05,NA
+2021,"Principal Data Scientist","S","CT",NA,NA,NA,416000
+2021,"Principal Data Scientist","L","FT",NA,151000,227500,NA
+2021,"Principal Data Scientist","M","FT",NA,NA,173762,NA
+2021,"Research Scientist","L","FT",91264,128720.5,78435,NA
+2021,"Research Scientist","M","FT",NA,63229.5,NA,NA
+2021,"Research Scientist","S","FT",NA,56738,50000,NA
+2021,"Staff Data Scientist","M","CT",NA,NA,105000,NA
+2021,"Staff Machine Learning Engineer","M","FT",NA,NA,185000,NA
+2022,"AI Architect","M","FT",NA,NA,180000,NA
+2022,"AI Developer","S","FT",NA,NA,275000,NA
+2022,"AI Engineer","L","FT",NA,107093,NA,NA
+2022,"AI Programmer","M","FT",40000,NA,NA,NA
+2022,"AI Research Engineer","L","FT",36940,NA,NA,NA
+2022,"AI Scientist","L","FT",2e+05,2e+05,125000,NA
+2022,"AI Scientist","M","FT",40760,160000,NA,NA
+2022,"AI Scientist","S","FT",NA,NA,NA,2e+05
+2022,"Admin & Data Analyst","M","FT",NA,NA,60000,NA
+2022,"Analytics Engineer","L","FT",130000,NA,NA,NA
+2022,"Analytics Engineer","M","FT",NA,97404.3,149414.105263158,171166.666666667
+2022,"Analytics Engineer","S","FT",NA,NA,48000,NA
+2022,"Applied Data Scientist","M","FT",45000,NA,NA,NA
+2022,"Applied Data Scientist","L","FT",NA,157000,278500,NA
+2022,"Applied Machine Learning Scientist","M","CT",30469,NA,NA,NA
+2022,"Applied Machine Learning Scientist","L","CT",NA,97712,NA,NA
+2022,"Applied Machine Learning Scientist","L","FT",NA,75000,92559.5,NA
+2022,"Applied Machine Learning Scientist","M","FT",NA,124000,150000,NA
+2022,"Applied Machine Learning Scientist","S","FL",NA,30523,NA,NA
+2022,"Applied Scientist","M","FT",NA,NA,188311.111111111,NA
+2022,"BI Analyst","L","FT",76000,NA,NA,NA
+2022,"BI Analyst","M","FT",NA,63000,25804,NA
+2022,"BI Analyst","S","FT",NA,NA,2e+05,NA
+2022,"BI Data Analyst","L","FT",58969,45050,NA,NA
+2022,"BI Data Analyst","M","FT",NA,79217,NA,NA
+2022,"BI Data Analyst","S","FT",NA,50432,NA,NA
+2022,"BI Developer","L","FT",NA,NA,130000,NA
+2022,"BI Developer","M","FT",NA,NA,130000,NA
+2022,"Big Data Engineer","M","FT",NA,NA,161311,NA
+2022,"Business Data Analyst","L","FT",49000,79149,1e+05,NA
+2022,"Business Data Analyst","M","FT",NA,17805,NA,NA
+2022,"Business Intelligence Developer","M","FT",NA,15000,NA,NA
+2022,"Cloud Database Engineer","M","FT",NA,NA,175000,NA
+2022,"Computer Vision Engineer","M","FT",125000,15897,60000,NA
+2022,"Computer Vision Engineer","S","FT",NA,58837,NA,NA
+2022,"Computer Vision Software Engineer","S","FT",150000,NA,NA,NA
+2022,"Data Analyst","L","FT",60714.2857142857,96833.3333333333,143000,NA
+2022,"Data Analyst","L","PT",25216,NA,NA,NA
+2022,"Data Analyst","M","FT",45061.3333333333,111005.291666667,113865.494186047,120000
+2022,"Data Analyst","S","FT",55000,45333.3333333333,NA,NA
+2022,"Data Analyst","S","PT",79862,NA,NA,NA
+2022,"Data Analyst","M","CT",NA,NA,90000,NA
+2022,"Data Analytics Consultant","S","FL",50000,NA,NA,NA
+2022,"Data Analytics Consultant","L","FT",NA,113000,NA,NA
+2022,"Data Analytics Engineer","M","FT",20000,NA,NA,NA
+2022,"Data Analytics Engineer","L","FT",NA,135000,NA,NA
+2022,"Data Analytics Lead","L","FT",NA,NA,405000,NA
+2022,"Data Analytics Manager","M","FT",NA,147500,127485,NA
+2022,"Data Analytics Manager","L","FT",NA,NA,133000,NA
+2022,"Data Architect","L","FT",NA,NA,163350,NA
+2022,"Data Architect","M","FT",NA,NA,166352.642857143,NA
+2022,"Data Engineer","L","FT",88722,35610,160853.583333333,NA
+2022,"Data Engineer","M","FT",114932.15,102272.428571429,147415.253776435,234700
+2022,"Data Engineer","S","FT",65000,65666,NA,NA
+2022,"Data Engineer","L","PT",NA,52533,NA,NA
+2022,"Data Management Specialist","L","FT",NA,NA,68293,NA
+2022,"Data Manager","M","FT",61450,116000,82477,NA
+2022,"Data Manager","L","FT",NA,NA,NA,125976
+2022,"Data Operations Analyst","M","FT",NA,NA,90562.5,NA
+2022,"Data Operations Engineer","M","FT",NA,80000,87500,NA
+2022,"Data Science Tech Lead","L","FT",NA,NA,375000,NA
+2022,"Data Scientist","L","FT",56818.2222222222,90472.25,153435.58974359,149018.5
+2022,"Data Scientist","M","FT",86053.2105263158,106586.892307692,154159.185964912,190159.375
+2022,"Data Scientist","M","PT",105000,NA,NA,NA
+2022,"Data Scientist","S","FT",52008,59805,113333.333333333,NA
+2022,"Data Scientist","M","FL",NA,1e+05,NA,NA
+2022,"Data Scientist Lead","L","FT",NA,89306,183000,NA
+2022,"Data Specialist","L","FT",105000,NA,185000,NA
+2022,"Data Specialist","M","FT",NA,150000,87500,NA
+2022,"Deep Learning Engineer","M","FT",NA,67723,NA,NA
+2022,"ETL Developer","M","FT",NA,52533,151183.75,NA
+2022,"Financial Data Analyst","L","FT",1e+05,NA,NA,NA
+2022,"Financial Data Analyst","M","FT",NA,75000,NA,NA
+2022,"Head of Business Intelligence","L","FT",NA,NA,NA,105066
+2022,"Head of Data","M","FT",NA,NA,2e+05,182500
+2022,"Head of Data","S","FT",NA,31520,NA,NA
+2022,"Head of Machine Learning","L","FT",NA,NA,NA,76309
+2022,"Lead Data Engineer","S","FT",NA,NA,NA,115222
+2022,"Lead Data Scientist","S","FT",NA,61566,29944,NA
+2022,"Lead Data Scientist","L","FT",NA,NA,144475,NA
+2022,"Lead Machine Learning Engineer","L","FT",NA,NA,82365,NA
+2022,"Lead Machine Learning Engineer","M","FT",NA,NA,84053,NA
+2022,"MLOps Engineer","M","FT",NA,129000,NA,NA
+2022,"Machine Learning Developer","L","FT",180000,NA,NA,NA
+2022,"Machine Learning Developer","M","FT",40000,76814,76814,NA
+2022,"Machine Learning Developer","S","FT",33000,NA,NA,NA
+2022,"Machine Learning Engineer","L","FT",56821.2,97383.8333333333,151311.75,NA
+2022,"Machine Learning Engineer","M","FL",1e+05,NA,NA,NA
+2022,"Machine Learning Engineer","M","FT",165000,126751.866666667,174644.013513514,NA
+2022,"Machine Learning Engineer","S","FT",73315.3333333333,120000,79083.25,NA
+2022,"Machine Learning Infrastructure Engineer","L","FT",NA,55685,NA,NA
+2022,"Machine Learning Infrastructure Engineer","M","FT",NA,NA,167400,NA
+2022,"Machine Learning Manager","M","FT",NA,NA,175000,NA
+2022,"Machine Learning Research Engineer","L","FT",66192,NA,NA,NA
+2022,"Machine Learning Researcher","L","FT",NA,105236,NA,NA
+2022,"Machine Learning Researcher","M","FT",NA,120000,NA,NA
+2022,"Machine Learning Scientist","S","FT",57336,NA,NA,190000
+2022,"Machine Learning Scientist","L","FT",NA,136150,NA,NA
+2022,"Machine Learning Scientist","M","FT",NA,118950,170800,NA
+2022,"Machine Learning Software Engineer","M","FT",NA,NA,240440,NA
+2022,"Manager Data Management","L","FT",NA,NA,125000,NA
+2022,"Marketing Data Analyst","S","FT",NA,NA,2e+05,NA
+2022,"NLP Engineer","S","CT",NA,60000,NA,NA
+2022,"NLP Engineer","S","FT",NA,44365,NA,NA
+2022,"Principal Data Analyst","S","FT",NA,75000,NA,NA
+2022,"Principal Data Architect","L","FT",NA,NA,38154,NA
+2022,"Principal Data Scientist","M","FT",NA,NA,155499,NA
+2022,"Principal Machine Learning Engineer","L","FT",NA,NA,190000,NA
+2022,"Product Data Analyst","M","FT",1e+05,140000,NA,NA
+2022,"Research Engineer","L","FT",41809,NA,NA,NA
+2022,"Research Engineer","M","FT",16455,240000,199837.5,NA
+2022,"Research Engineer","S","FT",NA,105066,NA,NA
+2022,"Research Scientist","L","FT",120000,76663,116653,84053
+2022,"Research Scientist","S","FT",NA,105066.5,NA,NA
+2022,"Research Scientist","M","FT",NA,NA,209225,NA
+2022,"Software Development Engineer","L","FT",15129,NA,NA,NA
+2023,"AI Architect","L","FT",NA,NA,2e+05,215936
+2023,"AI Architect","M","FT",NA,NA,258800,NA
+2023,"AI Developer","L","FT",172968,NA,NA,NA
+2023,"AI Developer","M","FT",64927,137441.5,162278.857142857,NA
+2023,"AI Developer","S","FT",120000,140000,53984,NA
+2023,"AI Engineer","L","FT",21593,32811,NA,NA
+2023,"AI Engineer","M","FT",35000,179172.727272727,172245.935483871,NA
+2023,"AI Engineer","L","CT",NA,50000,NA,NA
+2023,"AI Engineer","S","FT",NA,140000,NA,NA
+2023,"AI Product Manager","L","FT",NA,NA,120000,NA
+2023,"AI Programmer","L","FT",72043.5,NA,NA,NA
+2023,"AI Programmer","S","FT",50103.5,NA,NA,NA
+2023,"AI Programmer","M","FT",NA,NA,120000,NA
+2023,"AI Research Engineer","L","FT",24322,NA,NA,NA
+2023,"AI Research Engineer","M","FT",24940,115603,NA,NA
+2023,"AI Research Engineer","S","FT",30663,NA,NA,NA
+2023,"AI Scientist","S","FT",20000,54000,1e+05,NA
+2023,"AI Scientist","L","FT",NA,60353,241359,NA
+2023,"AI Scientist","M","FT",NA,120000,185500,NA
+2023,"AWS Data Architect","L","FT",NA,258000,NA,NA
+2023,"Admin & Data Analyst","M","FT",50000,NA,NA,NA
+2023,"Analytics Engineer","L","FT",43000,NA,2e+05,NA
+2023,"Analytics Engineer","M","FT",97444.6,158473.911764706,165565.67816092,200666.666666667
+2023,"Analytics Engineer","S","FT",NA,NA,50000,NA
+2023,"Analytics Engineering Manager","L","FT",NA,NA,399880,NA
+2023,"Applied Data Scientist","L","FT",29691,20673,64781,NA
+2023,"Applied Data Scientist","S","FT",NA,80000,NA,NA
+2023,"Applied Data Scientist","M","FT",NA,NA,67635,NA
+2023,"Applied Machine Learning Engineer","M","FT",NA,130000,NA,225000
+2023,"Applied Machine Learning Engineer","S","FT",NA,70179,NA,NA
+2023,"Applied Machine Learning Scientist","L","FT",48644,NA,90000,NA
+2023,"Applied Machine Learning Scientist","M","FT",43187,NA,NA,NA
+2023,"Applied Scientist","L","FT",167356.666666667,176648.484848485,192566.923076923,NA
+2023,"Applied Scientist","M","FT",211400,163498.888888889,194221.47,NA
+2023,"Autonomous Vehicle Technician","M","FT",NA,120000,NA,NA
+2023,"Azure Data Engineer","L","FT",NA,NA,1e+05,NA
+2023,"BI Analyst","M","FT",NA,134733.333333333,135937,NA
+2023,"BI Analyst","L","FT",NA,NA,18381,NA
+2023,"BI Data Analyst","M","FT",56666.6666666667,70000,72338,NA
+2023,"BI Data Analyst","S","FT",50000,NA,NA,NA
+2023,"BI Data Engineer","M","FT",60000,NA,NA,NA
+2023,"BI Developer","M","FT",100650,99084.8,121318.8,NA
+2023,"BI Developer","L","FT",NA,NA,160000,NA
+2023,"Big Data Architect","L","FT",NA,NA,153799,NA
+2023,"Big Data Engineer","S","FT",130000,NA,NA,NA
+2023,"Big Data Engineer","M","FT",NA,48585,NA,NA
+2023,"Business Data Analyst","M","FT",21593,NA,NA,NA
+2023,"Business Data Analyst","L","FT",NA,61000,107994,NA
+2023,"Business Data Analyst","M","CT",NA,35000,NA,NA
+2023,"Business Data Analyst","S","FL",NA,36000,NA,NA
+2023,"Business Intelligence Analyst","M","FT",76763.25,110016,134344.404761905,NA
+2023,"Business Intelligence Data Analyst","L","FT",99000,67419,NA,NA
+2023,"Business Intelligence Developer","M","FT",NA,84032,113145.357142857,137000
+2023,"Business Intelligence Engineer","M","FT",NA,84987,163700.921052632,209850
+2023,"Business Intelligence Engineer","L","FT",NA,125660,141695.454545455,NA
+2023,"Business Intelligence Manager","M","FT",NA,126750,NA,NA
+2023,"Business Intelligence Specialist","M","FT",NA,88756,199550,NA
+2023,"Cloud Data Engineer","L","FT",138588.5,NA,NA,NA
+2023,"Cloud Database Engineer","L","FT",NA,NA,170000,NA
+2023,"Cloud Database Engineer","M","FT",NA,NA,127500,NA
+2023,"Compliance Data Analyst","L","FT",45000,NA,NA,NA
+2023,"Computer Vision Engineer","M","FT",155000,101508,228650,NA
+2023,"Computer Vision Engineer","S","FT",NA,NA,2e+05,NA
+2023,"Computer Vision Software Engineer","L","FT",NA,NA,53984,NA
+2023,"Consultant Data Engineer","L","CT",NA,NA,118539,NA
+2023,"Data Analyst","L","FT",54883.375,63547.5,143042.857142857,NA
+2023,"Data Analyst","L","PT",18160,NA,NA,NA
+2023,"Data Analyst","M","FT",78815.5302013423,95540.7170418006,120973.697127937,113125
+2023,"Data Analyst","S","FT",28496,NA,79620.1666666667,NA
+2023,"Data Analyst Lead","S","FT",18000,NA,NA,NA
+2023,"Data Analytics Lead","M","FT",NA,81711.6666666667,99960,NA
+2023,"Data Analytics Manager","M","FT",NA,141438.80952381,159733.333333333,147500
+2023,"Data Analytics Manager","L","FT",NA,NA,192700,NA
+2023,"Data Analytics Specialist","M","FT",NA,NA,95000,NA
+2023,"Data Architect","M","FT",NA,132450.222222222,163990.735955056,167500
+2023,"Data Architect","L","FT",NA,NA,180950,NA
+2023,"Data DevOps Engineer","L","FT",47918,95012,NA,NA
+2023,"Data DevOps Engineer","S","FT",NA,NA,53984,NA
+2023,"Data Developer","M","FT",NA,97778.625,115100,NA
+2023,"Data Engineer","L","FT",43761,115496.5,156160.516129032,NA
+2023,"Data Engineer","M","FT",93812.5762711864,125331.147058824,158362.739374499,189606.375
+2023,"Data Engineer","M","CT",NA,42000,NA,NA
+2023,"Data Engineer","S","FT",NA,27000,NA,NA
+2023,"Data Infrastructure Engineer","M","FT",NA,180827.5,211649.375,NA
+2023,"Data Integration Engineer","M","FT",NA,NA,127750,NA
+2023,"Data Integration Specialist","M","FT",96605,NA,NA,NA
+2023,"Data Integration Specialist","L","FT",NA,NA,36483,NA
+2023,"Data Lead","M","FT",NA,122500,171625,215333.333333333
+2023,"Data Management Analyst","M","FT",70500,NA,NA,NA
+2023,"Data Management Specialist","M","FT",NA,NA,116523.25,NA
+2023,"Data Manager","M","FT",117700,97301.7037037037,123438.5,86875
+2023,"Data Manager","S","FT",NA,NA,NA,72000
+2023,"Data Manager","L","FT",NA,107350,NA,NA
+2023,"Data Modeler","M","FT",NA,100163.5,138110,NA
+2023,"Data Modeler","L","FT",NA,NA,142500,NA
+2023,"Data Operations Analyst","M","FT",NA,54870,114250,NA
+2023,"Data Operations Engineer","M","FT",NA,NA,184987.5,NA
+2023,"Data Operations Manager","M","FT",NA,NA,136000,NA
+2023,"Data Operations Specialist","M","FT",NA,57500,53210,NA
+2023,"Data Product Manager","M","FT",NA,173500,152208.333333333,NA
+2023,"Data Product Owner","M","FT",NA,80115.5,NA,NA
+2023,"Data Quality Analyst","M","FT",43064,75833.3333333333,96931.6666666667,NA
+2023,"Data Quality Engineer","L","FT",23753,NA,NA,NA
+2023,"Data Quality Engineer","M","FT",NA,NA,131500,NA
+2023,"Data Quality Manager","M","FT",NA,59059,NA,NA
+2023,"Data Scientist","L","FT",55249.6666666667,67371.1428571429,153842.045454545,181407
+2023,"Data Scientist","M","FT",99729.1320754717,131360.56187291,173125.099793531,213006.9
+2023,"Data Scientist","M","PT",95650,NA,NA,NA
+2023,"Data Scientist","S","FT",107012,57656.6666666667,152836,100416
+2023,"Data Scientist","S","FL",NA,21000,NA,NA
+2023,"Data Specialist","M","FT",NA,88407.6923076923,95210,NA
+2023,"Data Strategist","M","FT",NA,84750,108388.125,NA
+2023,"Data Strategy Manager","M","FT",NA,NA,138750,NA
+2023,"Data Visualization Analyst","M","FT",NA,NA,120000,NA
+2023,"Data Visualization Engineer","M","FT",NA,NA,122975,NA
+2023,"Data Visualization Specialist","M","FT",91050,121850,122275,NA
+2023,"Decision Scientist","M","FT",NA,173350,164734.25,NA
+2023,"Deep Learning Engineer","M","FT",135000,125000,272374,NA
+2023,"Deep Learning Researcher","L","FT",NA,NA,124163,NA
+2023,"ETL Developer","M","FT",NA,NA,122460,NA
+2023,"ETL Engineer","M","FT",NA,72286,NA,NA
+2023,"Finance Data Analyst","S","FT",40000,NA,NA,NA
+2023,"Finance Data Analyst","M","CT",NA,NA,323905,NA
+2023,"Financial Data Analyst","L","FT",56500,130000,NA,NA
+2023,"Head of Business Intelligence","L","FT",NA,NA,NA,116605
+2023,"Head of Data","L","FT",NA,NA,75577,290000
+2023,"Head of Data","M","FT",NA,NA,242500,214884.833333333
+2023,"Head of Machine Learning","M","FT",NA,NA,NA,259000
+2023,"Insight Analyst","M","FT",NA,46751.9,NA,NA
+2023,"Lead Data Analyst","L","FT",NA,43120.5,NA,NA
+2023,"Lead Data Scientist","L","FT",NA,NA,36000,NA
+2023,"Lead Machine Learning Engineer","S","FT",NA,NA,115000,NA
+2023,"MLOps Engineer","M","FT",95650,124275,171333.333333333,NA
+2023,"MLOps Engineer","L","FT",NA,27568,60000,NA
+2023,"Machine Learning Engineer","L","FT",76000,153577,179189.647058824,NA
+2023,"Machine Learning Engineer","M","FT",120487.363636364,163233.814814815,199027.661381653,190950
+2023,"Machine Learning Engineer","S","CT",NA,85125,NA,NA
+2023,"Machine Learning Engineer","S","FT",NA,94000,NA,NA
+2023,"Machine Learning Infrastructure Engineer","M","FT",NA,188760,167952.458333333,NA
+2023,"Machine Learning Manager","L","FT",NA,NA,129562,NA
+2023,"Machine Learning Modeler","M","FT",NA,NA,173350,NA
+2023,"Machine Learning Research Engineer","L","FT",NA,73824,NA,NA
+2023,"Machine Learning Research Engineer","M","FT",NA,90000,NA,NA
+2023,"Machine Learning Researcher","M","FT",NA,153275,150733.333333333,NA
+2023,"Machine Learning Researcher","S","FT",NA,210000,NA,NA
+2023,"Machine Learning Researcher","S","FL",NA,NA,50000,NA
+2023,"Machine Learning Scientist","M","FT",NA,274166.666666667,183504.178571429,NA
+2023,"Machine Learning Scientist","S","FT",NA,162500,NA,NA
+2023,"Machine Learning Software Engineer","L","FT",NA,29402,NA,NA
+2023,"Machine Learning Software Engineer","M","FT",NA,181300,200500,NA
+2023,"Machine Learning Specialist","M","FT",NA,55000,NA,NA
+2023,"Marketing Data Scientist","L","FT",NA,NA,90000,NA
+2023,"NLP Engineer","M","FT",NA,32834,146283.5,175000
+2023,"Power BI Developer","L","FT",NA,64781,NA,NA
+2023,"Principal Data Engineer","M","FT",NA,NA,91773,NA
+2023,"Principal Data Scientist","L","FT",NA,NA,147124.666666667,NA
+2023,"Principal Machine Learning Engineer","L","FT",NA,NA,99145,NA
+2023,"Product Data Analyst","S","CT",83200,NA,NA,NA
+2023,"Product Data Analyst","L","FT",NA,16417,57000,NA
+2023,"Prompt Engineer","S","FT",NA,60462,NA,NA
+2023,"Prompt Engineer","M","FT",NA,NA,166500,NA
+2023,"Research Analyst","L","FT",92700,NA,139800,NA
+2023,"Research Analyst","M","FT",76566.8333333333,87000,117115.409090909,NA
+2023,"Research Analyst","S","FT",NA,1e+05,NA,NA
+2023,"Research Engineer","M","FT",133457.142857143,153570.153846154,195436.303571429,NA
+2023,"Research Engineer","L","FT",NA,34549,198000,NA
+2023,"Research Engineer","S","FT",NA,NA,97171,NA
+2023,"Research Scientist","L","FT",171866.666666667,232685.714285714,179307.142857143,NA
+2023,"Research Scientist","M","FT",161462,169726.574074074,196538.204301075,202500
+2023,"Software Data Engineer","L","FT",NA,74883,210000,NA
+2023,"Software Data Engineer","M","FL",NA,NA,50000,NA
+2023,"Staff Data Analyst","S","FT",NA,179998,NA,NA
+2024,"AI Architect","M","FT",NA,8e+05,207386.3125,NA
+2024,"AI Architect","L","FT",NA,NA,289000,NA
+2024,"AI Data Engineer","M","FT",88888,NA,NA,NA
+2024,"AI Data Scientist","L","FT",58333,54017,NA,NA
+2024,"AI Data Scientist","M","FT",45006,NA,NA,NA
+2024,"AI Developer","M","FT",69194,144239.307692308,199366.970588235,276000
+2024,"AI Developer","M","PT",62962.5,NA,NA,NA
+2024,"AI Engineer","L","FT",84150.6666666667,120000,119666.666666667,NA
+2024,"AI Engineer","M","FT",78005.3333333333,152710.598901099,179426.25297619,186106.111111111
+2024,"AI Engineer","S","FT",16000,125000,140000,NA
+2024,"AI Engineer","M","CT",NA,122500,NA,NA
+2024,"AI Engineer","S","CT",NA,NA,120000,NA
+2024,"AI Engineering Manager","L","FT",NA,NA,179930.5,NA
+2024,"AI Lead","S","PT",NA,70000,NA,NA
+2024,"AI Lead","M","FT",NA,NA,158500.666666667,NA
+2024,"AI Machine Learning Engineer","L","FT",NA,NA,120000,NA
+2024,"AI Product Manager","M","FT",NA,194688.888888889,205656.25,NA
+2024,"AI Product Owner","M","FT",NA,119888.833333333,117500,NA
+2024,"AI Programmer","S","FT",NA,30000,NA,NA
+2024,"AI Programmer","M","FT",NA,NA,232662.5,NA
+2024,"AI Research Engineer","L","FT",NA,2e+05,NA,NA
+2024,"AI Research Engineer","S","CT",NA,63333,NA,NA
+2024,"AI Research Scientist","L","CT",88888,NA,NA,NA
+2024,"AI Research Scientist","L","FT",48019,NA,66666,NA
+2024,"AI Research Scientist","S","FT",NA,65000,NA,NA
+2024,"AI Research Scientist","M","FT",NA,NA,141666.5,NA
+2024,"AI Researcher","M","FT",3e+05,167615.714285714,159650,NA
+2024,"AI Researcher","S","FL",60000,NA,NA,NA
+2024,"AI Researcher","L","FT",NA,219000,78333,NA
+2024,"AI Scientist","M","FT",NA,143750,207234.444444444,NA
+2024,"AI Software Development Engineer","L","FT",NA,NA,25210,NA
+2024,"AI Software Engineer","S","PT",117647,NA,NA,NA
+2024,"AI Software Engineer","M","FT",NA,150084,170331.666666667,NA
+2024,"AI Solution Architect","M","FT",NA,NA,189079.8,NA
+2024,"AI Specialist","M","FT",70938.6666666667,82779.5,175816.764705882,122500
+2024,"Actuarial Analyst","M","FT",91333.3333333333,NA,NA,NA
+2024,"Admin & Data Analyst","L","FT",1e+05,42222,NA,NA
+2024,"Admin & Data Analyst","M","FT",NA,95000,NA,NA
+2024,"Algorithm Developer","M","FT",NA,NA,175000,NA
+2024,"Analista de Datos","L","FT",28888,NA,NA,NA
+2024,"Analyst","L","FT",137300,NA,NA,NA
+2024,"Analyst","M","CT",112500,NA,73375,NA
+2024,"Analyst","M","FT",92505.4295154185,107448.813829787,120335.083687943,143840.625
+2024,"Analyst","M","PT",1e+05,NA,66656.5,NA
+2024,"Analytics Analyst","M","FT",NA,24000,NA,NA
+2024,"Analytics Engineer","M","FT",132754.52,144721.993421053,168898.021235521,217187.5
+2024,"Analytics Engineer","S","FT",NA,59615,NA,NA
+2024,"Analytics Lead","L","FT",NA,NA,160050,NA
+2024,"Analytics Lead","M","FT",NA,NA,143570.85,NA
+2024,"Analytics Specialist","M","FT",27999.5,72144.3333333333,101353.625,146500
+2024,"Applied AI ML Lead","M","FT",NA,NA,292500,NA
+2024,"Applied Data Scientist","M","FL",30000,NA,NA,NA
+2024,"Applied Research Scientist","S","FT",NA,NA,66666,NA
+2024,"Applied Scientist","L","FT",187800,178213.127413127,198079.702970297,NA
+2024,"Applied Scientist","L","PT",91545,NA,NA,NA
+2024,"Applied Scientist","M","FT",142361.208333333,171596.008928571,176911.721973094,NA
+2024,"Architect","M","FT",NA,NA,176748.53030303,NA
+2024,"Artificial Intelligence Engineer","M","FT",93000,119450,191575,NA
+2024,"Artificial Intelligence Engineer","M","CT",NA,NA,30000,NA
+2024,"Associate","M","FT",97288.9705882353,133237.767663043,107603.528301887,126822.916666667
+2024,"Associate","L","FT",NA,146016.666666667,NA,NA
+2024,"Associate","M","PT",NA,65750,NA,NA
+2024,"BI Analyst","L","FT",44444,NA,NA,NA
+2024,"BI Analyst","M","FT",84598.4705882353,119491.3,106431.473684211,NA
+2024,"BI Analyst","M","PT",62400,NA,NA,NA
+2024,"BI Data Analyst","L","FT",NA,50000,NA,NA
+2024,"BI Data Analyst","S","FT",NA,NA,66666,NA
+2024,"BI Developer","M","FT",51579.5,96100.1463414634,107375.85,167250
+2024,"BI Developer","M","CT",NA,1e+05,NA,NA
+2024,"BI Engineer","M","FT",90000,104079.111111111,132791.705882353,NA
+2024,"BI Engineer","L","FT",NA,113900,NA,NA
+2024,"Backend Developer","M","FT",NA,NA,115384,NA
+2024,"Backend Engineer","L","FT",NA,154000,154000,NA
+2024,"Backend Engineer","M","FT",NA,165699.65625,199223.349056604,NA
+2024,"Backend Engineer","M","FL",NA,NA,61333,NA
+2024,"Backend Software Engineer","L","FT",NA,116756,NA,NA
+2024,"Bear Robotics","M","FT",80000,167500,190000,NA
+2024,"Big Data Analyst","M","CT",NA,80000,NA,NA
+2024,"Big Data Developer","L","FT",NA,117000,NA,NA
+2024,"Big Data Developer","M","FT",NA,92500,NA,NA
+2024,"Big Data Engineer","L","FT",17600,32472,NA,NA
+2024,"Bioinformatician","M","FT",88000,116604.166666667,137420.25,NA
+2024,"Bioinformatics Scientist","M","FT",48000,129996.833333333,158201.666666667,NA
+2024,"Business Analyst","M","FT",100357.253164557,96492.4,130460.06097561,116250
+2024,"Business Analyst","M","PT",54450,NA,NA,NA
+2024,"Business Analyst","L","FT",NA,NA,145700,NA
+2024,"Business Development Manager","L","FT",NA,79545,NA,NA
+2024,"Business Insights Manager","L","FT",NA,95588,NA,NA
+2024,"Business Intelligence","M","FT",86312.6153846154,125174.028571429,144851.615384615,194986.339285714
+2024,"Business Intelligence","L","FT",NA,123200,160050,NA
+2024,"Business Intelligence","M","PT",NA,1e+05,NA,NA
+2024,"Business Intelligence Analyst","M","CT",49000,130000,NA,NA
+2024,"Business Intelligence Analyst","M","FT",104138.6,111741.486111111,122343.957142857,155000
+2024,"Business Intelligence Analyst","L","FT",NA,52500,NA,NA
+2024,"Business Intelligence Consultant","M","FT",NA,NA,109500,NA
+2024,"Business Intelligence Developer","M","FT",90196.75,105392.907407407,125694.41025641,147500
+2024,"Business Intelligence Developer","M","PT",66000,NA,NA,NA
+2024,"Business Intelligence Engineer","L","FT",119850,130528.787878788,145300,NA
+2024,"Business Intelligence Engineer","L","PT",90630,NA,NA,NA
+2024,"Business Intelligence Engineer","M","FT",69240,116055.927083333,127555.50625,108000
+2024,"Business Intelligence Engineer","M","CT",NA,180000,NA,NA
+2024,"Business Intelligence Lead","M","FT",150747.5,76000,130352.083333333,NA
+2024,"Business Intelligence Lead","L","FT",NA,NA,160050,NA
+2024,"Business Intelligence Manager","M","FT",NA,148733.333333333,144795,NA
+2024,"Business Intelligence Specialist","M","FT",NA,91038.5,133324.625,NA
+2024,"CRM Data Analyst","L","PT",NA,NA,40000,NA
+2024,"Chatbot Developer","M","FT",118965,NA,175000,NA
+2024,"Clinical Data Operator","M","FT",NA,37500,NA,NA
+2024,"Cloud Database Administrator","M","FT",NA,115712.5,140342.8,NA
+2024,"Cloud Database Engineer","M","FT",NA,116484.375,170930.357142857,NA
+2024,"Cloud Developer","M","FT",NA,NA,211500,NA
+2024,"Cloud Engineer","M","FT",54803,124656.694444444,155476.852941176,88000
+2024,"Computational Biologist","M","FT",NA,115437.5,153194.681818182,NA
+2024,"Computer Vision Engineer","M","FT",138800,164288.923076923,179532.689655172,NA
+2024,"Consultant","L","FT",135100,154275,168450,NA
+2024,"Consultant","M","FT",86977.8947368421,114112.330985915,135308.710144928,NA
+2024,"Consultant","M","PT",51000,NA,131550,NA
+2024,"Consultant Data Engineer","M","FT",NA,NA,50000,NA
+2024,"Controls Engineer","S","FT",NA,NA,88888,NA
+2024,"Data Analyst","L","FT",93045.3333333333,89990,115133.333333333,NA
+2024,"Data Analyst","M","CT",121833.333333333,98500,100304.666666667,NA
+2024,"Data Analyst","M","FT",90424.0663900415,99759.7446601942,127856.568901304,108662.394736842
+2024,"Data Analyst","M","PT",85233.4615384615,78000,111870,NA
+2024,"Data Analyst Lead","S","CT",NA,125000,NA,NA
+2024,"Data Analytics Associate","M","FT",52000,NA,119500,NA
+2024,"Data Analytics Associate","L","FT",NA,NA,91000,NA
+2024,"Data Analytics Consultant","M","FT",77742.5,91527.8636363636,81362.5,NA
+2024,"Data Analytics Developer","M","FT",108950,114681.5,132306.5,NA
+2024,"Data Analytics Lead","M","FT",165350,NA,174176.521126761,NA
+2024,"Data Analytics Lead","L","FT",NA,NA,160050,NA
+2024,"Data Analytics Manager","M","FT",27000,131174.045454545,180390,168400
+2024,"Data Analytics Specialist","M","FT",88975,102297.666666667,139130.5625,NA
+2024,"Data Analytics Team Lead","M","FT",NA,NA,170000,NA
+2024,"Data Architect","M","FT",129400,135012.166666667,161730.347959184,231156.75
+2024,"Data Architect","L","FT",NA,129000,200751.75,NA
+2024,"Data Architect","M","CT",NA,NA,1e+05,NA
+2024,"Data Architect","M","PT",NA,NA,155475,NA
+2024,"Data Developer","M","FT",60000,115691.705882353,116575.125,130000
+2024,"Data Developer","M","CT",NA,NA,110860,NA
+2024,"Data Engineer","L","FT",125593.657142857,145710.298701299,169788,NA
+2024,"Data Engineer","M","CT",78698.6666666667,131250,115644.25,NA
+2024,"Data Engineer","M","FT",93675.4,129261.489717224,161032.070998495,201923.642857143
+2024,"Data Engineer","M","PT",67341.375,51450,NA,NA
+2024,"Data Governance","M","FT",NA,100722.666666667,153221.642857143,167425.555555556
+2024,"Data Governance Analyst","M","FT",94371.45,118415.55,137555.857142857,152000
+2024,"Data Governance Architect","M","FT",NA,NA,118209,NA
+2024,"Data Governance Engineer","M","FT",123200,NA,165150,NA
+2024,"Data Governance Lead","M","FT",NA,NA,161101.736842105,NA
+2024,"Data Governance Manager","M","FT",NA,131256.272727273,NA,147500
+2024,"Data Governance Manager","L","FT",NA,NA,56000,NA
+2024,"Data Governance Specialist","M","FT",31333.25,93015.3333333333,132622.8,150000
+2024,"Data Infrastructure Engineer","M","FT",NA,200696.954545455,187057.083333333,NA
+2024,"Data Integration Analyst","M","FT",97100,88100,178000,NA
+2024,"Data Integration Coordinator","M","FT",NA,67500,NA,NA
+2024,"Data Integration Developer","M","FT",NA,108675,145259.625,NA
+2024,"Data Integration Engineer","M","FT",142500,109881.166666667,144600,154250
+2024,"Data Integration Specialist","M","FT",NA,95674.9333333333,NA,NA
+2024,"Data Integrity Analyst","M","FT",88918.75,63645,NA,NA
+2024,"Data Lead","M","FT",NA,180000,133767.25,NA
+2024,"Data Lead","L","FT",NA,NA,176333.333333333,NA
+2024,"Data Management Analyst","M","FT",86746.0555555556,90171.35,114330.842105263,NA
+2024,"Data Management Associate","M","FT",NA,84000,NA,NA
+2024,"Data Management Consultant","M","FT",NA,65859.5,120260.6,NA
+2024,"Data Management Coordinator","M","FT",NA,NA,54000,NA
+2024,"Data Management Lead","M","FT",NA,NA,125805.65,NA
+2024,"Data Management Manager","M","FT",NA,112292.875,NA,NA
+2024,"Data Management Specialist","M","FT",80809.8333333333,81999.9259259259,104891.615384615,NA
+2024,"Data Management Specialist","M","CT",NA,90000,NA,NA
+2024,"Data Manager","M","FT",75563.25,92938.3680555556,115911.192857143,162500
+2024,"Data Manager","M","PT",NA,59390.25,NA,NA
+2024,"Data Manager","L","FT",NA,NA,140904,NA
+2024,"Data Modeler","M","CT",NA,105000,140000,NA
+2024,"Data Modeler","M","FT",NA,115459.6,144526.051724138,NA
+2024,"Data Operations Analyst","M","FT",81830.2,80250,125272.222222222,NA
+2024,"Data Operations Associate","M","FT",61687.5,82532.5625,NA,NA
+2024,"Data Operations Engineer","M","FT",76196.5,107777.416666667,149082.4,NA
+2024,"Data Operations Lead","M","FT",NA,NA,115000,NA
+2024,"Data Operations Manager","M","FT",122500,157346.875,182000,NA
+2024,"Data Operations Specialist","M","FT",NA,89890,103236.666666667,140000
+2024,"Data Operations Specialist","M","CT",NA,52500,NA,NA
+2024,"Data Operations Specialist","M","PT",NA,54250,NA,NA
+2024,"Data Pipeline Engineer","M","FT",NA,NA,172500,NA
+2024,"Data Platform Engineer","M","FT",NA,NA,195000,121125
+2024,"Data Product Analyst","M","FT",135170,NA,NA,NA
+2024,"Data Product Manager","M","FT",NA,147413.097222222,172190.742857143,147500
+2024,"Data Product Owner","M","FT",NA,128528.28125,127222.071428571,185500
+2024,"Data Quality Analyst","L","FT",20700,NA,NA,NA
+2024,"Data Quality Analyst","M","FT",85801.1428571429,85000,127739.181818182,NA
+2024,"Data Quality Engineer","M","FT",NA,112480.428571429,124529.0625,NA
+2024,"Data Quality Lead","M","FT",NA,NA,144828.333333333,NA
+2024,"Data Quality Manager","M","FT",NA,88152.6,143350.75,NA
+2024,"Data Quality Specialist","M","FT",79050,103638.5,135290.166666667,NA
+2024,"Data Quality Specialist","M","PT",NA,60000,NA,NA
+2024,"Data Reporter","M","FT",NA,NA,83750,NA
+2024,"Data Reporting Analyst","M","FT",63622.8571428571,75262.5,82802.2142857143,NA
+2024,"Data Scientist","L","FT",111501.333333333,151577.088607595,186417.795918367,157777.333333333
+2024,"Data Scientist","M","CT",109885.5,114000,137974,NA
+2024,"Data Scientist","M","FT",107472.915167095,142890.024056131,170647.874237805,200295.925
+2024,"Data Scientist","M","PT",98774.2352941177,81571.5,NA,NA
+2024,"Data Scientist","S","FT",NA,95000,NA,NA
+2024,"Data Scientist Lead","L","FT",NA,NA,78031,NA
+2024,"Data Scientist Manager","L","FT",NA,NA,105555,NA
+2024,"Data Specialist","M","FT",64288.75,75202.0487804878,111818.515625,246450
+2024,"Data Specialist","M","PT",81800,NA,NA,NA
+2024,"Data Specialist","L","FT",NA,147000,NA,NA
+2024,"Data Strategist","M","FT",NA,128265.678571429,156262.5,NA
+2024,"Data Strategy Lead","M","FT",NA,NA,157683.333333333,NA
+2024,"Data Strategy Manager","M","FT",NA,146000,NA,NA
+2024,"Data Team Lead","M","FT",NA,NA,120313.636363636,NA
+2024,"Data Visualization Analyst","M","FT",112257.166666667,107889.333333333,110989.8,116250
+2024,"Data Visualization Analyst","L","FT",NA,47500,NA,NA
+2024,"Data Visualization Developer","M","FT",NA,119104.166666667,NA,NA
+2024,"Data Visualization Engineer","M","FT",150000,99110.875,150028.8,NA
+2024,"Data Visualization Specialist","M","FT",135000,103865.65,115654.7,NA
+2024,"Data and Reporting Analyst","M","FT",112000,NA,91930,NA
+2024,"Data and Reporting Professional","M","FT",70300,70300,85000,NA
+2024,"DataOps Engineer","M","FT",NA,NA,137049.333333333,NA
+2024,"Databricks Engineer","M","FT",NA,NA,179783,NA
+2024,"Decision Scientist","M","FT",NA,136362.619047619,151134.112903226,244650
+2024,"DevOps Engineer","M","FT",90983.1666666667,136097.205128205,156872.058823529,NA
+2024,"DevOps Engineer","L","FT",NA,NA,108750,NA
+2024,"Developer","L","FT",119000,NA,NA,NA
+2024,"Developer","M","FT",86414,117852.048780488,137111.458333333,NA
+2024,"Developer","M","PT",43998,35000,NA,NA
+2024,"Developer","M","CT",NA,160000,NA,NA
+2024,"Director of Business Intelligence","M","FT",NA,NA,NA,187500
+2024,"Director of Machine Learning","M","FT",NA,NA,281616.666666667,222266.666666667
+2024,"ETL Developer","M","FT",NA,126626,118800,NA
+2024,"ETL Engineer","L","FT",NA,NA,NA,150000
+2024,"ETL Engineer","M","FT",NA,111225,NA,NA
+2024,"Elasticsearch Administrator","M","FT",NA,NA,98700,NA
+2024,"Encounter Data Management Professional","M","FT",68600,61771.4285714286,83000,NA
+2024,"Engineer","L","FT",146034.210526316,149917.1875,163695.238095238,NA
+2024,"Engineer","M","FT",101160.278846154,146994.250909091,184477.064339781,243693.752941176
+2024,"Engineer","M","PT",44440,135000,NA,NA
+2024,"Engineer","M","CT",NA,89500,126166.666666667,77928
+2024,"Engineering Manager","M","FT",NA,267634.580645161,242557.206896552,NA
+2024,"Enterprise Account Executive","M","FT",NA,NA,332000,203750
+2024,"Frontend Engineer","M","FT",NA,205000,187075,NA
+2024,"Full Stack Developer","M","FT",88406.75,133323.166666667,127508.625,NA
+2024,"Full Stack Developer","L","FT",NA,124324.125,NA,NA
+2024,"Full Stack Engineer","M","FT",111601,154958.333333333,181559.303030303,158000
+2024,"Fullstack Engineer","M","FT",NA,138006,179536.818181818,NA
+2024,"Head of AI","M","FT",NA,NA,NA,243725
+2024,"Head of Data","M","FT",NA,NA,179267.5,233713.425
+2024,"Head of Data","L","FT",NA,NA,73333,NA
+2024,"Head of Machine Learning","M","FT",NA,NA,NA,334000
+2024,"Infrastructure Engineer","M","FT",NA,NA,193675,NA
+2024,"Insight Analyst","M","FT",72037.6111111111,77293.3333333333,189121,NA
+2024,"Insight Analyst","L","FT",NA,NA,145700,NA
+2024,"Lead AI Engineer","L","FT",NA,NA,91262,NA
+2024,"Lead Analyst","M","FT",NA,NA,159723.8125,NA
+2024,"Lead Data Analyst","L","FT",NA,39615,NA,NA
+2024,"Lead Data Engineer","L","FT",NA,NA,96666,NA
+2024,"Lead Data Scientist","L","FT",NA,NA,105555,NA
+2024,"Lead Engineer","M","FT",NA,NA,182447.941176471,NA
+2024,"Lead Machine Learning Engineer","L","FT",NA,NA,77777,NA
+2024,"ML Infrastructure Engineer","M","FT",NA,191258.333333333,248320.833333333,NA
+2024,"MLOps Engineer","M","FT",150000,155749.909090909,171741.379310345,NA
+2024,"Machine Learning Architect","M","FT",NA,NA,207551.25,NA
+2024,"Machine Learning Developer","M","FT",61962.5,103096.25,188532.142857143,NA
+2024,"Machine Learning Engineer","L","FT",88888,165853.125,198800,NA
+2024,"Machine Learning Engineer","M","FT",153548.557432432,180163.363277394,211010.443777637,228846.428571429
+2024,"Machine Learning Engineer","S","FT",27000,NA,123092.5,NA
+2024,"Machine Learning Engineer","M","CT",NA,120000,NA,NA
+2024,"Machine Learning Engineer 5","M","FT",NA,NA,2e+05,NA
+2024,"Machine Learning Infrastructure Engineer","M","FT",NA,185750,229560,NA
+2024,"Machine Learning Lead","M","FT",NA,NA,147830.5,NA
+2024,"Machine Learning Manager","M","FT",NA,210790,251116.666666667,NA
+2024,"Machine Learning Model Engineer","M","FT",180000,255000,255000,NA
+2024,"Machine Learning Modeler","M","FT",NA,NA,186825,NA
+2024,"Machine Learning Performance Engineer","M","FT",NA,NA,262500,NA
+2024,"Machine Learning Platform Engineer","M","FT",NA,209603.333333333,207230,NA
+2024,"Machine Learning Quality Engineer","M","FT",NA,149833.333333333,175750,NA
+2024,"Machine Learning Research Engineer","M","FT",80769,NA,NA,NA
+2024,"Machine Learning Researcher","M","FT",131575,194898.1,139711.138297872,NA
+2024,"Machine Learning Scientist","M","FT",155112.5,187893.878378378,169007.242424242,183400
+2024,"Machine Learning Scientist","M","CT",NA,155000,NA,NA
+2024,"Machine Learning Specialist","L","FT",NA,73076,160000,NA
+2024,"Machine Learning Specialist","M","FT",NA,106000,157200,NA
+2024,"Machine Learning Tech Lead","M","FT",NA,NA,183450,NA
+2024,"Machine Vision Engineer","M","FT",NA,80000,NA,NA
+2024,"Manager","L","FT",104004,154917.857142857,205090,NA
+2024,"Manager","M","FT",94809.9375,151468.957746479,186128.898686679,162615.909090909
+2024,"Manager","M","CT",NA,47500,165000,NA
+2024,"Manager","M","PT",NA,24000,NA,NA
+2024,"Manager Data Management","S","FL",NA,NA,36014,NA
+2024,"Marketing Analyst","M","FT",NA,NA,1e+05,NA
+2024,"Marketing Analytics Manager","M","FT",NA,102500,NA,NA
+2024,"Master Data Management","M","FT",47941.5,NA,90700,233372.5
+2024,"Master Data Specialist","M","FT",NA,83000,NA,NA
+2024,"Member of Technical Staff","L","FT",NA,NA,226733.333333333,NA
+2024,"Member of Technical Staff","M","FT",NA,NA,174223.333333333,NA
+2024,"NLP Engineer","M","FT",NA,129150,NA,175000
+2024,"People Data Analyst","M","FT",NA,NA,NA,45000
+2024,"Platform Data Engineer","L","FT",NA,40000,NA,NA
+2024,"Platform Engineer","M","FT",168000,145145.256756757,193301.163934426,184620
+2024,"Postdoctoral Fellow","M","FT",NA,78176.4,NA,NA
+2024,"Power BI Administrator","M","FT",NA,133425,NA,NA
+2024,"Power BI Architect","M","FT",NA,NA,110000,NA
+2024,"Power BI Consultant","M","FT",NA,NA,106000,NA
+2024,"Power BI Developer","M","FT",57812.5,92570.0294117647,95635.125,116250
+2024,"Pricing Analyst","M","FT",72827.0833333333,NA,91250,NA
+2024,"Principal Application Delivery Consultant","M","FT",NA,NA,182500,NA
+2024,"Principal Researcher","M","FT",NA,NA,230600,NA
+2024,"Principal Software Architect","M","FT",NA,NA,215000,NA
+2024,"Principal Statistical Programmer","M","FT",NA,178633.333333333,157370,NA
+2024,"Product Analyst","M","FT",106706.361111111,108125,162301.617647059,NA
+2024,"Product Designer","M","FT",128250,130000,170894.7,NA
+2024,"Product Designer","S","FT",27777,NA,NA,NA
+2024,"Product Manager","L","FT",185650,243000,209750,NA
+2024,"Product Manager","M","FT",108601.25,183412.246073298,196317.078767123,203861.5
+2024,"Product Owner","M","FT",NA,NA,203000,NA
+2024,"Prompt Engineer","M","FT",NA,240395,202484.75,NA
+2024,"Python Developer","M","FT",NA,108077.777777778,126078.5,NA
+2024,"QA Engineer","M","FT",NA,143034.375,132156.25,NA
+2024,"Quantitative Analyst","M","FT",139770.5,128150,111807.916666667,148685.714285714
+2024,"Quantitative Analyst","L","FT",NA,1e+05,NA,NA
+2024,"Quantitative Developer","M","FT",NA,250000,208500,NA
+2024,"Quantitative Research Analyst","M","FT",51000,NA,NA,NA
+2024,"Quantitative Researcher","M","FT",175000,170575.294117647,203587.833333333,175000
+2024,"Research Analyst","M","FT",113977.205128205,108363.433333333,142819.802083333,178500
+2024,"Research Analyst","M","PT",55000,NA,NA,NA
+2024,"Research Assistant","M","FT",54437.625,62666.6875,104680,NA
+2024,"Research Assistant","M","PT",42719,60000,NA,NA
+2024,"Research Associate","L","FT",43750,NA,NA,NA
+2024,"Research Associate","M","FT",60029.25,77921.7058823529,NA,NA
+2024,"Research Associate","M","PT",NA,44625.5,NA,NA
+2024,"Research Engineer","M","FT",148870.403846154,210494.555232558,215231.303092783,NA
+2024,"Research Engineer","S","FT",NA,NA,170000,NA
+2024,"Research Scientist","M","FT",197942.125,186628.49113924,212257.641402715,NA
+2024,"Research Scientist","L","FT",NA,166990,197102.941176471,NA
+2024,"Research Scientist","M","PT",NA,84000,NA,NA
+2024,"Research Scientist","S","FT",NA,NA,88888.5,NA
+2024,"Risk Analyst","M","FT",91300,NA,130493,NA
+2024,"Robotics Engineer","M","FT",NA,141854.071428571,152627.558823529,NA
+2024,"Robotics Software Engineer","M","FT",NA,175750,210333.333333333,210000
+2024,"SAS Developer","M","FT",NA,NA,149409,NA
+2024,"Scala Spark Developer","M","FT",NA,56133,NA,NA
+2024,"Security Engineer","L","FT",NA,174400,195450,NA
+2024,"Security Engineer","M","FT",NA,168741.666666667,188739.078947368,NA
+2024,"Site Reliability Engineer","M","FT",144784,183289.928571429,199704.054794521,NA
+2024,"Software Architect","L","FT",NA,NA,249000,NA
+2024,"Software Architect","M","FT",NA,NA,213348.75,NA
+2024,"Software Developer","M","FT",70662.4285714286,116737.26,145946.08,145625
+2024,"Software Developer","M","PT",54450,NA,NA,NA
+2024,"Software Developer","L","FT",NA,NA,212433.333333333,NA
+2024,"Software Development Engineer","L","FT",133110,174670,187498.888888889,NA
+2024,"Software Development Engineer","M","FT",125544.8,157221.096774194,192326.95,NA
+2024,"Software Engineer","M","CT",66000,109000,NA,NA
+2024,"Software Engineer","M","FT",126711.400611621,170124.786711603,201320.651007988,214048.137931034
+2024,"Software Engineer","M","PT",63000,NA,131550,NA
+2024,"Software Engineer","L","FT",NA,171706.571428571,194420,NA
+2024,"Solution Architect","M","FT",89000,130000,176535.056818182,NA
+2024,"Solution Architect","L","FT",NA,NA,188600,NA
+2024,"Solution Engineer","M","FT",NA,NA,168750,NA
+2024,"Solutions Architect","M","FT",59999.5,1e+05,194533.876373626,NA
+2024,"Solutions Architect","L","FT",NA,130283.333333333,186343.75,NA
+2024,"Solutions Architect","M","PT",NA,NA,68530,NA
+2024,"Solutions Engineer","M","FT",50133,127816.482758621,180320.329787234,239133.333333333
+2024,"Solutions Engineer","M","CT",NA,150000,NA,NA
+2024,"Stage","M","FT",26371,NA,143350,NA
+2024,"Statistical Programmer","M","FT",73750,122761.730769231,144956.666666667,NA
+2024,"Statistician","M","FT",68848.6666666667,86228.6875,146775,109100
+2024,"System Engineer","M","FT",NA,90000,156400,NA
+2024,"Systems Engineer","M","FT",67862.6666666667,157283.433333333,183956.404761905,NA
+2024,"Systems Engineer","L","FT",NA,113364,NA,NA
+2024,"Tech Lead","M","FT",NA,NA,205000,NA
+2024,"Technical Lead","M","FT",NA,NA,203002.954545455,NA
+2024,"Technical Specialist","M","FT",NA,NA,170450,NA
+2024,"Technical Writer","M","CT",50000,NA,NA,NA
+2024,"Technical Writer","M","FT",NA,94133.3333333333,215767.5,NA
+2024,"Technology Integrator","M","FT",NA,98650,98650,NA
+2025,"AI Architect","M","FT",NA,NA,189625,NA
+2025,"AI Engineer","L","FT",104004,NA,NA,NA
+2025,"AI Engineer","M","FT",NA,146398.166666667,106842,NA
+2025,"Analyst","M","FT",66250,104888,120714.666666667,NA
+2025,"Analytics Engineer","M","FT",NA,NA,152390.75,NA
+2025,"Applied Scientist","L","FT",NA,179700,205200,NA
+2025,"Applied Scientist","M","FT",NA,NA,274150,NA
+2025,"Architect","M","FT",NA,NA,175500,NA
+2025,"Associate","M","FT",NA,103044,89500,NA
+2025,"Business Intelligence Analyst","M","FT",NA,NA,127500,NA
+2025,"Business Intelligence Developer","M","FT",NA,96740.5,NA,NA
+2025,"Business Intelligence Engineer","M","FT",NA,149500,93650,NA
+2025,"Business Intelligence Lead","M","FT",NA,NA,139650,NA
+2025,"Consultant","M","FT",20084,NA,176500,NA
+2025,"Data Analyst","M","FT",85369.1363636364,79750,115472,NA
+2025,"Data Architect","M","FT",NA,NA,160136.7,NA
+2025,"Data Engineer","M","FT",NA,143658.333333333,137125.916666667,179800
+2025,"Data Engineer","L","FT",NA,NA,189800,NA
+2025,"Data Governance","M","FT",NA,38526,NA,178317.5
+2025,"Data Governance Analyst","M","FT",NA,NA,145000,NA
+2025,"Data Infrastructure Engineer","M","FT",NA,NA,141052.25,NA
+2025,"Data Management Specialist","M","FT",NA,85000,NA,NA
+2025,"Data Manager","M","FT",NA,71164.75,NA,NA
+2025,"Data Product Owner","M","FT",NA,NA,140000,NA
+2025,"Data Quality Analyst","M","FT",95000,NA,112463.5,NA
+2025,"Data Scientist","M","FT",78947,140200.5,155527.535714286,NA
+2025,"Data Scientist","L","FT",NA,173304,NA,NA
+2025,"Data Specialist","M","FT",54000,NA,NA,NA
+2025,"Data Team Lead","M","FT",NA,NA,128100,NA
+2025,"Data Visualization Engineer","M","FT",NA,NA,128450,NA
+2025,"Decision Scientist","M","FT",NA,118965,NA,NA
+2025,"DevOps Engineer","M","FT",NA,NA,159500,NA
+2025,"Encounter Data Management Professional","M","FT",NA,76800,93100,NA
+2025,"Engineer","L","FT",NA,174400,NA,NA
+2025,"Engineer","M","FT",NA,145655.3,166816.888888889,NA
+2025,"Engineering Manager","M","FT",NA,NA,287000,NA
+2025,"Lead Analyst","M","FT",NA,NA,106400,NA
+2025,"MLOps Engineer","M","FT",NA,NA,180500,NA
+2025,"Machine Learning Engineer","M","FT",129780,NA,171244,NA
+2025,"Machine Learning Engineer","L","FT",NA,176450,NA,NA
+2025,"Manager","M","FT",NA,158081.142857143,192148.5625,NA
+2025,"Platform Engineer","M","FT",NA,189850,NA,NA
+2025,"Product Manager","M","FT",NA,93620,213000,NA
+2025,"Product Owner","M","FT",NA,NA,140000,NA
+2025,"Quantitative Developer","M","FT",NA,NA,220000,NA
+2025,"Research Analyst","M","FT",1e+05,NA,NA,NA
+2025,"Research Engineer","M","FT",NA,NA,144575,NA
+2025,"Research Scientist","M","FT",NA,NA,190500,NA
+2025,"Sales Development Representative","M","FT",60000,NA,NA,NA
+2025,"Software Developer","M","FT",NA,128550,NA,NA
+2025,"Software Development Engineer","M","FT",NA,124800,156832,NA
+2025,"Software Engineer","M","FT",128250,193910,175698.52173913,NA
+2025,"Solution Architect","M","FT",NA,NA,215850,NA
+2025,"Solutions Architect","M","FT",NA,NA,193536,NA
+2025,"System Engineer","M","FT",NA,NA,118100,NA
+2025,"Technical Lead","M","FT",NA,NA,171366.666666667,NA
