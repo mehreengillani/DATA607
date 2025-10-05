@@ -1,0 +1,304 @@
+---
+title: "Project2 Mehreen Ali Gillani"
+output: html_document
+date: "2025-10-04"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+<b>Exercise Schedule & Meal Plan</b> is a structured dataset (80,000 rows, 5 columns) mapping basic user inputs—Gender, Goal, and BMI Category—to recommended Exercise Schedule and Meal Plan. Ideal for recommendation systems, multi-output classification, and rule-based baselines in health & fitness applications. This dataset is available on kaggle: https://www.kaggle.com/datasets/kavindavimukthi/meal-plan-and-exercise-schedule-gender-goal-bmi
+
+### Step 1: import libraries, read csv from github
+```{r}
+# import libraries
+library(tidyverse)
+library(stringr)
+library(scales)
+library(forcats)
+url = 'https://raw.githubusercontent.com/mehreengillani/DATA607/refs/heads/main/GYM.csv'
+gym_data <- read_csv(url)
+```
+
+### Step 2: Initial data exploration
+```{r}
+
+cat("Dataset dimensions:", dim(gym_data), "\n")
+cat("Column names:", names(gym_data), "\n")
+cat("\nFirst look at the data:\n")
+gym_data
+```
+
+### Step 3: Check for missing values and data types
+```{r}
+cat("Missing values by column:\n")
+colSums(is.na(gym_data))
+
+cat("\nData types:\n")
+glimpse(gym_data)
+```
+
+### Step 4: Standardize all categorical variables
+```{r}
+
+
+clean_data <- gym_data %>%
+  rename_with(~ tolower(gsub(" ", "_", .x))) %>%
+  mutate(
+    gender = factor(gender, levels = c("Female", "Male")),
+    
+    # Standardize goal values
+    goal = case_when(
+      tolower(goal) == "muscle_gain" ~ "Muscle Gain",
+      tolower(goal) == "fat_burn" ~ "Fat Burn",
+      TRUE ~ goal
+    ),
+    goal = factor(goal, levels = c("Muscle Gain", "Fat Burn")),
+    
+    # Standardize BMI categories
+    bmi_category = case_when(
+      tolower(bmi_category) == "normal weight" ~ "Normal",
+      tolower(bmi_category) == "underweight" ~ "Underweight",
+      tolower(bmi_category) == "overweight" ~ "Overweight", 
+      tolower(bmi_category) == "obesity" ~ "Obese",
+      TRUE ~ bmi_category
+    ),
+    bmi_category = factor(bmi_category, 
+                         levels = c("Underweight", "Normal", "Overweight", "Obese")),
+    
+    # Categorize exercise intensity based on schedule descriptions
+    exercise_intensity = case_when(
+      str_detect(tolower(exercise_schedule), "high-intensity|hiit|intense") ~ "High",
+      str_detect(tolower(exercise_schedule), "moderate|strength training") ~ "Moderate",
+      str_detect(tolower(exercise_schedule), "light|low-impact|yoga") ~ "Low",
+      TRUE ~ "Unknown"
+    ),
+    exercise_intensity = factor(exercise_intensity, 
+                               levels = c("Low", "Moderate", "High")),
+    
+    # Extract step count from exercise schedule
+    steps = as.numeric(str_extract(exercise_schedule, "\\d+")),
+    
+    # Categorize meal plan types
+    meal_plan_type = case_when(
+      str_detect(tolower(meal_plan), "balanced|moderate") ~ "Balanced",
+      str_detect(tolower(meal_plan), "high-calorie|protein-rich|whole milk") ~ "High Calorie",
+      str_detect(tolower(meal_plan), "low-carb|high-fiber") ~ "Low Carb",
+      str_detect(tolower(meal_plan), "low-calorie|portion control") ~ "Low Calorie",
+      TRUE ~ "Other"
+    ),
+    meal_plan_type = factor(meal_plan_type)
+  )
+
+cat("Cleaned data structure:\n")
+head(clean_data)
+
+colnames(clean_data)
+
+```
+
+### Step 4.1: Verify categorical variable standardization
+```{r}
+#Verify categorical variable standardization
+cat("Gender distribution:\n")
+table(clean_data$gender)
+
+cat("\nGoal distribution:\n") 
+table(clean_data$goal)
+
+cat("\nBMI Category distribution:\n")
+table(clean_data$bmi_category)
+
+cat("\nExercise Intensity distribution:\n")
+table(clean_data$exercise_intensity)
+
+cat("\nMeal Plan Type distribution:\n")
+table(clean_data$meal_plan_type)
+
+
+```
+
+### Step 4.2: Create comprehensive summary tables
+
+```{r comprehensive summary tables}
+# Summary 1: Goals by Gender and BMI - Percentage of Total
+goal_summary <- clean_data %>%
+  count(gender, bmi_category, goal) %>%
+  ungroup() %>%  # Remove previous grouping
+  mutate(percentage_of_total = round(n / sum(n) * 100, 2)) %>% # Percentage of overall total
+  arrange(gender, bmi_category, desc(n))
+  
+cat("Goals by Gender and BMI Category (Percentage of Total):\n")
+print(goal_summary, n = Inf)
+```
+
+### Step 5: Visualizations for categorical data analysis
+```{r}
+
+# Visualization 1: Goals by Gender
+ggplot(clean_data, aes(x = gender, fill = goal)) +
+  geom_bar(position = "dodge", alpha = 0.8) +
+  geom_text(stat = 'count', aes(label = after_stat(count)), 
+            position = position_dodge(width = 0.9), vjust = -0.5) +
+  labs(title = "Fitness Goals by Gender",
+       x = "Gender", 
+       y = "Count",
+       fill = "Goal") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set5")
+```
+
+### Visualization 5.1: Exercise Intensity by Goal
+```{r}
+# Visualization 3: Exercise Intensity by Goal
+ggplot(clean_data, aes(x = goal, fill = exercise_intensity)) +
+  geom_bar(position = "dodge", alpha = 0.8) +
+  labs(title = "Exercise Intensity by Fitness Goal",
+       x = "Goal", 
+       y = "Count",
+       fill = "Intensity") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set4") +
+  facet_wrap(~gender)
+```
+<br>
+<b>Muscle Gain Approaches:</b> Men prefer high-intensity; women choose moderate strength training <br>
+<b>Overall Intensity Preference:</b>  Women favor low-intensity activities (yoga, swimming) more than men<br>
+<b>Most Common Pattern:</b>  Low-intensity exercise predominates across both genders<br>
+
+
+### Step 5.2: BMI Category Distribution by Gender
+```{r}
+# Load scales package properly
+library(scales)
+
+# Calculate percentages first, then plot
+bmi_gender_percentage <- clean_data %>%
+  count(gender, bmi_category) %>%
+  group_by(gender) %>%
+  mutate(percentage = n / sum(n)) %>%
+  ungroup()
+
+# Now create the plot with percentages
+ggplot(bmi_gender_percentage, aes(x = gender, y = percentage, fill = bmi_category)) +
+  geom_col(position = "dodge", alpha = 0.8) +
+  labs(title = "BMI Category Distribution by Gender",
+       x = "Gender", 
+       y = "Percentage",
+       fill = "BMI Category") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set4") +
+  scale_y_continuous(labels = percent, limits = c(0, 1)) +  # 0% to 100%
+  geom_text(aes(label = percent(percentage)), 
+            position = position_dodge(width = 0.9), 
+            vjust = -0.5, size = 3)
+```
+<br>
+<b> Underweight:</b> Nearly identical rates (Female: 26.25%, Male: 26.09%)<br>
+<b> Overweight:</b> Comparable percentages (Female: 24%, Male: 25.5%)<br>
+<b> Obese:</b> Minimal gender difference (Female: 24.5%, Male: 23.75%)<br>
+<b> Overall:</b> Remarkably similar BMI distribution patterns between genders<br>
+
+
+### Step 5.3 Visualization: Meal Plan Types by Goal and BMI
+```{r}
+
+# Calculate percentages first
+meal_gender_goal_percentage <- clean_data %>%
+  count(gender, goal,meal_plan_type) %>%
+  group_by(gender) %>%
+  mutate(percentage = round(n / sum(n),3)) %>% #round(n / sum(n) * 100, 2))
+  ungroup()
+
+# Now create the plot with percentages
+ggplot(meal_gender_goal_percentage, aes(x = meal_plan_type, y = percentage, fill = meal_plan_type)) +
+  geom_col(position = "dodge", alpha = 0.8) +
+  labs(title = "Meal Plan Types by Goal",
+       x = "Gender",  # Note: You might want to reconsider this x-axis label since it shows meal_plan_type
+       y = "Percentage",
+       fill = "Meal Plan Type") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set4") +
+  scale_y_continuous(labels = percent, limits = c(0, 1)) +  # 0% to 100%
+  facet_grid(goal ~ gender) +
+  geom_text(aes(label = percent(percentage)), 
+            position = position_dodge(width = 0.9), 
+            vjust = -0.5, size = 3) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
+
+<br>
+<b>Muscle Gain:</b> Men prefer low-carb; women choose balanced diets<br>
+<b>Fat Burn:</b>  Both genders consistently select high-calorie meal plans<br>
+<b>Overall:</b>  Gender influences diet choice for muscle building but not for fat reduction<br>
+
+
+### Step 5.4 Visualization Step counts by goal and intensity
+```{r}
+step_heatmap <- clean_data %>%
+  group_by(exercise_intensity, goal) %>%
+  summarise(mean_steps = mean(steps, na.rm = TRUE), .groups = 'drop')
+
+ggplot(step_heatmap, aes(x = exercise_intensity, y = goal, fill = mean_steps)) +
+  geom_tile(color = "white", size = 1) +
+  geom_text(aes(label = round(mean_steps)), color = "white", fontface = "bold") +
+  scale_fill_gradient(low = "lightblue", high = "darkblue", 
+                      name = "Average Steps") +
+  labs(title = "Average Step Count by Exercise Intensity and Goal",
+       x = "Exercise Intensity", 
+       y = "Goal") +
+  theme_minimal()
+```
+
+
+
+###  Summary
+
+This analysis of the Exercise Schedule & Meal Plan dataset revealed several key insights into fitness patterns across gender, BMI categories, and fitness goals:
+
+####  Key Findings:
+
+<b>Gender-Based Exercise Patterns:</b> Distinct exercise intensity preferences emerged between genders. Men pursuing muscle gain predominantly selected high-intensity workouts, while women with the same goal preferred moderate strength training. Overall, women showed a stronger preference for low-intensity activities like yoga and swimming.<br>
+
+<b>BMI Distribution Consistency:</b> The analysis revealed remarkably similar BMI distributions across genders, with nearly identical proportions in underweight (~26%), overweight (~24-25%), and obese (~24%) categories for both males and females.
+
+<b>Goal-Oriented Meal Planning: 
+Muscle Gain:</b> Men prefer low-carb; women choose balanced diets<br>
+<b>Fat Burn:</b>  Both genders consistently select high-calorie meal plans
+
+####  Methodological Strengths:
+
+  * Successfully standardized and cleaned categorical variables from categorical text data
+  * Implemented robust feature engineering to extract exercise intensity and step counts
+  * Created comprehensive visualizations showing proportional relationships
+  * Maintained data integrity through systematic transformation pipelines
+
+### Future Work
+
+####  1. Advanced Analytics
+
+<b>Machine Learning Applications:</b> Develop recommendation systems using multi-output classification to suggest personalized exercise and meal plans<br>
+<b>Cluster Analysis:</b> Identify distinct user segments based on gender, BMI, and goal combinations for targeted fitness programs<br>
+<b>Predictive Modeling:</b> Build models to predict optimal exercise intensity and meal plans for new users<br>
+
+####  2. Data Enhancement
+
+<b>Temporal Analysis:</b> Incorporate time-series data to track fitness progress and plan effectiveness over time<br>
+<b>Nutritional Deep Dive:</b> Expand meal plan analysis with detailed nutritional information (macronutrients, calories)<br>
+<b>Exercise Specificity:</b> Categorize exercises by type (cardio, strength, flexibility) and muscle groups targeted<br>
+
+
+####  3. Expanded Research Questions
+
+<b>Cultural & Geographic Factors:</b>  Investigate how exercise and diet preferences vary across different demographics<br>
+<b>Seasonal Patterns:</b>  Analyze how fitness recommendations change based on seasonal variations<br>
+<b>Age Group Analysis:</b>  Extend the dataset to include age demographics for life-stage specific recommendations<br>
+
+
+####  4. Technical Improvements
+
+<b>Personalized Fitness Apps:</b> Use findings to develop AI-driven fitness coaching applications<br>
+<b>Healthcare Integration:</b> Partner with healthcare providers for obesity prevention and weight management programs<br>
+<b>Corporate Wellness:</b> Adapt insights for workplace wellness program development<br>
+This analysis provides a strong foundation for building intelligent fitness recommendation systems and contributes valuable insights to the growing field of data-driven health and wellness optimization.
+
