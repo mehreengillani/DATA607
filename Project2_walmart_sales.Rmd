@@ -1,0 +1,761 @@
+---
+title: "Project 2  Mehreen Ali Gillani"
+output: html_document
+date: "2025-10-03"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Walmart Sales Data 2010-2012
+This is a Walmart sales data available on kaggle. We will study the sales data of one of the largest retailers in the world. Let's figure out what factors influence its revenue. Can factors such as air temperature and fuel cost influence the success of a huge company along with the purchasing power index and Unemployment rate?
+
+The data contains the following columns:<br>
+<b>Store:</b> Store number<br>
+<b>Date:</b>  Sales week start date <br>
+<b>Weekly_Sales:</b>  Sales<br>
+<b>Holiday_Flag:</b>  Mark on the presence or absence of a holiday<br>
+<b>Temperature:</b>  Air temperature in the region<br>
+<b>Fuel_Price:</b>  Fuel cost in the region<br>
+<b>CPI:</b>  Consumer price index<br>
+<b>Unemployment:</b>  Unemployment rate
+
+### Step 1. Read csv file from Kaggle link:
+```{r}
+library(tidyverse) #include dplyr, tidyr, ggplot2
+
+url = 'https://storage.googleapis.com/kagglesdsdata/datasets/4438189/8620416/Walmart_Sales.csv?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=gcp-kaggle-com%40kaggle-161607.iam.gserviceaccount.com%2F20251005%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20251005T223057Z&X-Goog-Expires=259200&X-Goog-SignedHeaders=host&X-Goog-Signature=76d3e1ae1330577ebc7b911101f23f54c511f6f63f7472bacae9849ecc04d22789d9acc0a31bb17d01bb9ebba9186fe82309a729c6989dbea363b527d8cd2db5feaff923f2e641c38186b9b2ec0e81c833420b5e4e253ba5a0fa777c4b79ab02e2361e5653d4e474e50dc06725631f22c456d8f5f046ca327e0ad0c3666e949e91ab2d131dc5fe8f0ddcf5a359e83b8d6bb07d463958070ac671a13ffafadf1d18f57cd9cb82b502d3f60f078549d13738b1062f481c7928b6b84c87d99422041e377f9e2b2a491a9631819966f3fd67e54f40e9dab1a7625976ecb2dab799868eb4383768ae0a758c28eba5c8858654d1bab7e2116cb5e855cfb59402214ce7'
+
+walmart_sales <- read.csv(url) #read csv from Kaggle url
+
+```
+
+### Step 2: Initial Data Exploration
+```{r}
+cat("Dataset Structure:\n")
+str(walmart_sales)
+cat("\nFirst few rows:\n")
+head(walmart_sales)
+```
+
+
+### Step 3: Show data summary
+
+```{r}
+cat("\nSummary statistics:\n")
+summary(walmart_sales)
+```
+
+
+####  Dataset Characteristics:
+
+<b>Store Coverage:</b> 45 distinct retail locations <br>
+<b>Temporal Features:</b> <br>
+Date field (currently character format - requires conversion to proper date type) <br>
+Holiday indicator (binary: 0 = regular day, 1 = holiday) <br>
+<b>Economic Metrics:</b> <br>
+Fuel prices ranging from $2.50 to $4.50 <br>
+Weekly sales data Wide spread from $209K to $3.82M <br>
+Consumer prices vary widely (126-227 CPI range) with a central tendency around 183,  <br>
+indicating generally elevated but inconsistent economic conditions across stores.<br>
+<b>Environmental Factor:</b> <br>
+Temperature range: -2°F to 100°F with mean of 60.7°F <br>
+The unemployment data shows considerable disparity (3.9%-14.3%), with a central tendency near 8%, <br>
+reflecting diverse economic health across different store markets <br>
+
+### Step 4: Data Cleaning and Type Conversion
+```{r}
+# Clean and transform the data
+walmart_clean <- walmart_sales %>%
+  # Convert date to proper format and extract useful time features
+  mutate(
+    Date = as.Date(Date, format = "%d-%m-%Y"),
+    year = year(Date),
+    month = month(Date, label = TRUE),
+    week = week(Date),
+    day_of_week = wday(Date, label = TRUE),
+    quarter = quarter(Date),
+    # Convert categorical variables to factors
+    Holiday_Flag = factor(Holiday_Flag, levels = c(0, 1), labels = c("non_holiday", "holiday")),
+    # Create sales categories
+    weekly_sales_category = case_when(
+      Weekly_Sales < 1000000 ~ "Low",
+      Weekly_Sales >= 1000000 & Weekly_Sales < 2000000 ~ "Medium",
+      Weekly_Sales >= 2000000 ~ "High"
+    ),
+    # Create temperature segments
+    temp_segment = cut(Temperature, 
+                      breaks = c(-Inf, 30, 60, 90, Inf),
+                      labels = c("Very Cold", "Cold", "Moderate", "Hot"))
+  ) %>%
+  # Remove any potential duplicates
+  distinct() %>%
+  # Handle missing values if any
+  drop_na()
+
+ # dplyr method to convert all column names to lower case letters
+  walmart_clean <- walmart_clean %>%
+  rename_all(tolower)
+
+cat("After cleaning - Dataset structure:\n")
+glimpse(walmart_clean)
+unique(walmart_clean$year)
+dim(walmart_clean)
+```
+Data dimension: 6435 rows with 15 columns 
+Data is from 2010, 2011 and 2012
+
+### Step 5: Data Reshaping with tidyr
+```{r wide format quarter}
+# Create a wide format for store comparisons
+store_performance_wide <- walmart_clean %>%
+  group_by(store, year, quarter) %>%
+  summarise(
+    total_sales = sum(weekly_sales),
+    avg_sales = mean(weekly_sales),
+    max_sales = max(weekly_sales),
+    min_sales = min(weekly_sales),
+    .groups = 'drop'
+  ) %>%
+  pivot_wider(
+    names_from = quarter,
+    values_from = c(total_sales, avg_sales, max_sales, min_sales),
+    names_sep = "_Q"
+  )
+
+cat("Wide format - Store performance by quarter:\n")
+glimpse(store_performance_wide)
+```
+
+
+```{r wide plot quarter}
+# Create quarterly_sales_long first
+quarterly_sales_long <- store_performance_wide %>%
+  select(store, year, contains("total_sales")) %>%
+  pivot_longer(
+    cols = contains("total_sales"),
+    names_to = "quarter",
+    values_to = "sales",
+    names_prefix = "total_sales_Q"
+  ) %>%
+  mutate(quarter = paste0("Q", quarter))
+
+# Better way to find top stores (using total sales across all quarters)
+top_stores <- quarterly_sales_long %>%
+  group_by(store) %>%
+  summarise(total_sales = sum(sales, na.rm = TRUE)) %>%
+  slice_max(total_sales, n = 8) %>%
+  pull(store)
+
+# Create the plot
+quarterly_trends <- quarterly_sales_long %>%
+  filter(store %in% top_stores)
+
+ggplot(quarterly_trends, aes(x = quarter, y = sales, group = store, color = factor(store))) +
+  geom_line(size = 1) +
+  geom_point(size = 2) +
+  facet_wrap(~ year) +
+  labs(
+    title = "Quarterly Sales Trends - Top 8 Performing Stores",
+    x = "Quarter",
+    y = "Quarterly Sales",
+    color = "Store ID"
+  ) +
+  theme_minimal() +
+  scale_y_continuous(labels = scales::dollar)
+```
+
+####  Findings from Quarterly Sales Trends - Top 8 Performing Stores:<br>
+<b>Q4 Performance: </b> 2010 and 2011 showed peak sales in Q4, while 2012 Q4 dropped to the lowest level.<br>
+
+<b>2011 Trend: </b>  Consistent quarter-over-quarter sales growth throughout the year.<br>
+
+<b>2010 Pattern: </b>  Q1 started low, increased in Q2, and peaked in Q4.<br>
+
+<b>2012 Anomaly: </b>  Moderate sales in Q1-Q3 followed by a sharp Q4 decline.<br>
+
+To assess data completeness, we need to verify the number of weeks recorded per store each year. The observed sales decline in 2012 Q4 may stem from incomplete data coverage rather than actual performance issues.
+
+```{r}
+weeks_per_store_year <- walmart_clean %>%
+  group_by(store, year) %>%
+  summarise(
+    total_weeks = n(),
+    unique_weeks = n_distinct(week),
+    .groups = 'drop'
+  )
+
+# View the results
+view(weeks_per_store_year)
+print(weeks_per_store_year, n = 20)
+```
+
+Data coverage analysis reveals the sales decline in 2012 Q4 is attributable to incomplete data rather than performance issues. While 2011 has complete 52-week records, 2012 contains only 43 weeks of data, creating artificial declines in the quarterly analysis.
+
+
+### Step 6: Advanced Data Transformations
+#### 6.1 Transformation 1: Store-level performance metrics
+```{r}
+
+# Create multiple transformed views of the data
+
+
+store_metrics <- walmart_clean %>%
+  group_by(store, year) %>%
+  summarise(
+    #Total annual sales for each store-year combination
+    total_revenue = sum(weekly_sales),
+    #Average weekly sales performance
+    #Helps compare stores of different sizes on a normalized basis
+    avg_weekly_sales = mean(weekly_sales),
+    #Standard deviation of weekly sales
+    #Measures how consistent or unpredictable sales are throughout the year
+    sales_volatility = sd(weekly_sales),
+    #Compares average sales during holiday weeks vs non-holiday weeks
+    holiday_boost = mean(weekly_sales[holiday_flag == "holiday"]) / 
+                    mean(weekly_sales[holiday_flag == "non_holiday"]),
+    best_month = month[which.max(weekly_sales)][1],
+    worst_month = month[which.min(weekly_sales)][1],
+    observation_count = n(),
+    .groups = 'drop'
+  ) %>%
+  mutate(
+    #Divides all stores into 4 equal groups (quartiles) based on avg_weekly_sales
+    #Each store gets a number 1-4 representing which quartile they belong to
+    performance_tier = ntile(avg_weekly_sales, 4),
+    performance_label = case_when(
+      performance_tier == 1 ~ "Low",
+      performance_tier == 2 ~ "Medium",
+      performance_tier == 3 ~ "High",
+      performance_tier == 4 ~ "Elite"
+    )
+  )
+view(store_metrics)
+```
+<b>Holiday performance ratio </b>
+
+Values > 1 = stores perform better during holidays
+Values < 1 = stores perform worse during holidays
+High volatility = unpredictable sales patterns
+
+#### 6.2 Transformation 2: Time series analysis by store and week
+```{r}
+# Load the zoo package for rolling mean calculations
+library('zoo') 
+
+# Create time series features for sales analysis
+time_series_data <- walmart_clean %>%
+  # Sort data chronologically for each store to ensure proper time sequence
+  arrange(store, year, month, week) %>%
+  # Group by store to calculate metrics within each store separately
+  group_by(store) %>%
+  # Create new time-based metrics for each store
+  mutate(
+    # Get previous week's sales for comparison (1-week lag)
+    sales_lag1 = lag(weekly_sales, 1),
+    # Calculate week-over-week sales growth percentage
+    sales_growth = (weekly_sales / sales_lag1 - 1) * 100,
+    # Compute 4-week moving average to smooth out weekly fluctuations
+    rolling_avg_4wk = zoo::rollmean(weekly_sales, 4, fill = NA, align = 'right')
+  ) %>%
+  # Remove grouping to return to normal dataframe structure
+  ungroup()
+
+# Select only the key columns for analysis and reporting
+selected_data <- time_series_data %>%
+  select(store, year, month, week, weekly_sales, sales_lag1, sales_growth, rolling_avg_4wk)
+
+# Open interactive data viewer to explore the transformed dataset
+view(selected_data)
+
+# Display first few rows in console for quick inspection
+head(selected_data)
+```
+
+### 6.3 Transformation 3 time series analysis for store and MONTHLY rolling mean
+```{r}
+# monthly analysis (aggregate weekly data into monthly totals first)
+monthly_analysis <- walmart_clean %>%
+  # Group by store and month to create monthly aggregates
+  group_by(store, year, month) %>%
+  # Calculate monthly totals from weekly data
+  summarise(
+    monthly_sales = sum(weekly_sales),
+    .groups = 'drop'
+  ) %>%
+  # Sort chronologically
+  arrange(store, year, month) %>%
+  # Group by store for time series calculations
+  group_by(store) %>%
+  mutate(
+    # Get previous month's total sales
+    monthly_sales_lag1 = lag(monthly_sales, 1),
+    # Calculate month-over-month growth
+    monthly_growth = (monthly_sales / monthly_sales_lag1 - 1) * 100,
+    # Compute 3-month rolling average of monthly totals
+    rolling_avg_3month = zoo::rollmean(monthly_sales, 3, fill = NA, align = 'right')
+  ) %>%
+  ungroup()
+
+# View monthly analysis
+view(monthly_analysis)
+head(monthly_analysis)
+```
+### 6.4 Transformation 4: Holiday impact analysis
+```{r}
+holiday_analysis <- walmart_clean %>%
+  group_by(store, holiday_flag) %>%
+  summarise(
+    avg_sales = mean(weekly_sales),
+    median_sales = median(weekly_sales),
+    sales_count = n(),
+    .groups = 'drop'
+  ) %>%
+  group_by(store) %>%
+  arrange(store, holiday_flag) %>%  # Sort by store and holiday_flag (0 then 1)
+  mutate(
+    holiday_premium = (avg_sales / lag(avg_sales) - 1) * 100  
+    # Calculates percentage difference: 
+    # For holiday_flag=1 row: (holiday_sales / previous_non_holiday_sales - 1) * 100
+    # Shows how much higher/lower holiday sales are compared to non-holiday sales
+  ) %>%
+  filter(!is.na(holiday_premium))  # Keep only rows where calculation worked (holiday_flag=1 rows)
+view(holiday_analysis)
+```
+Final filter keeps only holiday rows with the calculated premium
+Example: If non-holiday sales = $100 and holiday sales = $125:
+
+(125 / 100 - 1) * 100 = 25% holiday premium
+
+
+### 6.5 Weather and economic impact
+
+```{r}
+# Analyze external factors
+external_factors_analysis <- walmart_clean %>%
+  group_by(store, temp_segment) %>%
+  summarise(
+    avg_sales = mean(weekly_sales),
+    avg_temperature = mean(temperature),
+    avg_fuel_price = mean(fuel_price),
+    avg_cpi = mean(cpi),
+    avg_unemployment = mean(unemployment),
+    observation_count = n(),
+    .groups = 'drop'
+  ) %>%
+  arrange(store, avg_temperature)
+external_factors_analysis
+```
+
+### Step 7: Correlation analysis between variables
+```{r}
+# Correlation analysis between variables
+correlation_analysis <- walmart_clean %>%
+  group_by(store) %>%
+  summarise(
+    cor_temp_sales = cor(temperature, weekly_sales),
+    cor_fuel_sales = cor(fuel_price, weekly_sales),
+    cor_cpi_sales = cor(cpi, weekly_sales),
+    cor_unemp_sales = cor(unemployment, weekly_sales),
+    .groups = 'drop'
+  )
+view(correlation_analysis)
+```
+
+```{r}
+# Convert to long format for heatmap
+correlation_long <- correlation_analysis %>%
+  pivot_longer(
+    cols = -store,
+    names_to = "variable",
+    values_to = "correlation"
+  ) %>%
+  mutate(
+    variable = case_when(
+      variable == "cor_temp_sales" ~ "Temperature",
+      variable == "cor_fuel_sales" ~ "Fuel Price",
+      variable == "cor_cpi_sales" ~ "CPI",
+      variable == "cor_unemp_sales" ~ "Unemployment",
+      TRUE ~ variable
+    )
+  )
+```
+
+```{r}
+library(plotly)
+library(dplyr)
+
+# First, ensure variable names are properly formatted
+significant_correlations <- correlation_long %>%
+  filter(abs(correlation) > 0.3) %>%
+  mutate(
+    variable_clean = case_when(
+      variable == "cor_temp_sales" ~ "Temperature",
+      variable == "cor_fuel_sales" ~ "Fuel Price",
+      variable == "cor_cpi_sales" ~ "CPI",
+      variable == "cor_unemp_sales" ~ "Unemployment",
+      TRUE ~ variable
+    ),
+    correlation_label = round(correlation, 3),
+    significance_level = case_when(
+      abs(correlation) > 0.7 ~ "Very Strong",
+      abs(correlation) > 0.5 ~ "Strong", 
+      abs(correlation) > 0.3 ~ "Moderate",
+      TRUE ~ "Weak"
+    )
+  )
+
+# Create interactive heatmap with proper x-axis
+plot_ly(
+  data = significant_correlations,
+  x = ~variable_clean,  # Use cleaned variable names
+  y = ~as.factor(store),
+  z = ~correlation,
+  type = "heatmap",
+  colors = colorRamp(c("darkred", "white", "darkblue")),
+  hoverinfo = "text",
+  text = ~paste(
+    "Store:", store,
+    "<br>Variable:", variable_clean,
+    "<br>Correlation:", correlation_label,
+    "<br>Significance:", significance_level
+  ),
+  colorbar = list(
+    title = "Correlation",
+    tickvals = c(-1, -0.5, 0, 0.5, 1),
+    ticktext = c("-1.0", "-0.5", "0", "0.5", "1.0")
+  )
+) %>%
+  layout(
+    title = list(
+      text = "<b>Significant Correlations Only (|r| > 0.3)</b>",
+      x = 0.5,
+      font = list(size = 16)
+    ),
+    xaxis = list(
+      title = "Economic Variables",
+      tickangle = -45,
+      categoryorder = "array",
+      categoryarray = c("Temperature", "Fuel Price", "CPI", "Unemployment")  # Explicit order
+    ),
+    yaxis = list(
+      title = "Store ID"
+    ),
+    margin = list(l = 80, r = 50, b = 100, t = 80),
+    width = 800,
+    height = 600
+  )
+
+```
+
+
+
+
+<br><br><br><br><br><br>
+<b>Based on the correlation heatmap analysis, here are the key findings:</b>
+
+####  Correlation Analysis Findings
+
+<b>1. Temperature Impact:</b><br>
+
+Temperature shows a consistent negative correlation with weekly sales across most stores
+As temperatures increase, sales tend to decrease, or vice versa suggesting potential seasonal patterns
+
+<b>2. CPI (Consumer Price Index) Relationship:</b><br>
+
+CPI demonstrates predominantly strong positive correlations with sales across the store network
+Store 36 stands out as a significant exception with a highly negative correlation (-0.92)
+This indicates most stores benefit from economic expansion, while Store 36 shows inverse behavior<br>
+
+<b>3. Fuel Price Effects:</b><br>
+
+Fuel prices exhibit mixed correlations with sales performance
+Positive correlations observed in several stores, suggesting some locations benefit from or are resilient to fuel price changes
+<b>Negative correlations identified in key locations:</b><br>
+  Store 36 (most affected), Store 35, Store 31, Store 14
+This indicates varied customer sensitivity to transportation costs across different store locations
+
+<b>4. Unemployment Rate Influence:</b><br>
+
+Unemployment rates show primarily negative correlations with sales
+Higher unemployment typically associates with reduced consumer spending
+Notable exceptions with strong positive correlations:
+Store 36, Store 35
+These stores appear to perform better in higher unemployment environments, suggesting unique local market dynamics
+
+<b>Key Store Insights:</b><br>
+Store 36 demonstrates atypical behavior across multiple variables, warranting further investigation
+Stores show heterogeneous responses to economic factors, highlighting the importance of localized strategies
+The mixed correlations suggest customer demographics and local economic conditions significantly influence each store's performance drivers
+These findings emphasize the need for store-specific strategies rather than one-size-fits-all approaches to sales optimization.
+
+### Step 8:  Annual performance metrics for each store
+```{r Annual performance metrics}
+
+# Calculate annual performance metrics for each store
+store_year_metrics <- walmart_clean %>%
+  # Group by store and year to calculate annual statistics
+  group_by(store, year) %>%
+  # Compute key performance indicators for each store-year combination
+  summarise(
+    # Total annual revenue across all weeks
+    total_annual_sales = sum(weekly_sales),
+    # Average weekly sales throughout the year
+    mean_weekly_sales = mean(weekly_sales),
+    # Median weekly sales (robust measure of typical performance)
+    median_weekly_sales = median(weekly_sales),
+    # Standard deviation of weekly sales (measures volatility/consistency)
+    sales_volatility = sd(weekly_sales),
+    # Number of weeks with data in the year
+    weeks_recorded = n(),
+    # Average temperature throughout the year
+    mean_temperature = mean(temperature),
+    # Average fuel price throughout the year
+    mean_fuel_price = mean(fuel_price),
+    # Average consumer price index throughout the year
+    mean_cpi = mean(cpi),
+    # Average unemployment rate throughout the year
+    mean_unemployment = mean(unemployment),
+    .groups = 'drop'
+  ) %>%
+  # Sort by store and year for better readability
+  arrange(store, year)
+
+# View the comprehensive annual metrics in interactive data viewer
+view(store_year_metrics)
+
+# Display first few rows in console for quick inspection
+head(store_year_metrics)
+```
+### Step 9 Visualization: 
+### 9.1 Line plot showing sales trends
+```{r}
+
+library(plotly)
+
+# Line plot showing sales trends
+sales_trend <- ggplot(store_year_metrics, 
+                     aes(x = year, y = total_annual_sales, 
+                         group = store, color = as.factor(store))) +
+  geom_line(alpha = 0.7) +
+  geom_point(size = 1) +
+  labs(title = "Annual Sales Trends by Store (2010-2012)",
+       x = "Year", y = "Total Annual Sales ($)",
+       color = "Store ID") +
+  theme_minimal() +
+  scale_y_continuous(labels = scales::dollar)
+
+# Interactive version
+ggplotly(sales_trend)
+```
+
+
+### Store Performance Trends Analysis
+
+<b>1. Declining Performance Stores:</b><br>
+
+Store 14 demonstrates a concerning downward trajectory with consistent sales degradation from 2010 through 2012
+Store 35 shows a similar declining pattern, indicating potential operational challenges or market share loss in these locations<br>
+
+<b>2. Consistently Underperforming Store:</b><br>
+
+Store 33 maintains the lowest annual sales performance across all three years (2010-2012)
+This store consistently ranks at the bottom of the performance spectrum, suggesting systemic issues requiring immediate intervention 
+
+### 9.2 Box plot showing sales distribution
+```{r}
+
+sales_box <- ggplot(store_year_metrics, 
+                   aes(x = as.factor(year), y = total_annual_sales)) +
+  geom_boxplot(fill = "lightblue", alpha = 0.7) +
+  geom_jitter(width = 0.2, alpha = 0.5, size = 1) +
+  labs(title = "Annual Sales Distribution by Year",
+       x = "Year", y = "Total Annual Sales ($)") +
+  theme_minimal() +
+  scale_y_continuous(labels = scales::dollar)
+
+sales_box
+```
+
+
+
+### Based on the Sales Distribution Box Plot Analysis:
+
+  * 2011 achieved peak annual sales performance across the store network<br>
+  * 2010 maintained strong second-place results with consistent sales distribution<br>
+  * 2012 experienced significant sales degradation with markedly lower total annual sales<br>
+The analysis reveals a concerning downward trend from 2011's peak performance to 2012's substantial decline, indicating potential market challenges 
+
+
+### 9.3 Heatmap of store performance across years
+```{r}
+
+performance_heatmap <- ggplot(store_year_metrics, 
+                             aes(x = as.factor(year), y = as.factor(store), 
+                                 fill = total_annual_sales)) +
+  geom_tile(color = "white", linewidth = 0.5) +
+  scale_fill_viridis_c(
+    labels = scales::dollar, 
+    name = "Annual Sales",
+    option = "plasma"  # Better color contrast
+  ) +
+  labs(
+    title = "Walmart Store Performance Heatmap (2010-2012)",
+    subtitle = "Annual Sales Distribution Across 45 Stores",
+    x = "Year", 
+    y = "Store ID"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 0, size = 10),
+    axis.text.y = element_text(size = 8),  # Smaller font for store labels
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    plot.subtitle = element_text(hjust = 0.5, size = 11),
+    panel.grid = element_blank(),
+    legend.position = "right",
+    plot.margin = margin(0.0000005, .0000005, .000005, 0.000005, "cm")  # Increased margins
+  ) +
+  # Add value labels on tiles for better readability
+  geom_text(aes(label = scales::dollar(total_annual_sales, scale = 1e-6, suffix = "M")), 
+            size = 2, color = "white", fontface = "bold")
+
+# Display with increased dimensions
+performance_heatmap
+# Save with specific dimensions
+ggsave("store_performance_heatmap.png", performance_heatmap, 
+       width = 30, height = 29, units = "in", dpi = 500)
+
+```
+<br><br>
+####  9.4 Average vs Standard Deviation for Sales
+```{r}
+volatility_plot <- ggplot(store_year_metrics, 
+                         aes(x = mean_weekly_sales, y = sales_volatility,
+                             size = total_annual_sales, color = as.factor(store))) +
+  geom_point(alpha = 0.7) +
+  labs(title = "Sales Consistency Analysis: Average vs Volatility",
+       x = "Mean Weekly Sales ($)", 
+       y = "Sales Volatility (Standard Deviation)",
+       size = "Total Annual Sales", color = "Store ID") +
+  theme_minimal() +
+  scale_x_continuous(labels = scales::dollar) +
+  scale_y_continuous(labels = scales::dollar) +
+  guides(color = "none")  # Remove store color legend for clarity
+
+# Interactive version
+ggplotly(volatility_plot)
+
+```
+
+
+
+
+
+
+### Step 10: Calculate year-over-year growth for each store
+
+```{r}
+#Calculate year-over-year growth for each store
+store_growth_analysis <- store_year_metrics %>%
+  # Group by store to calculate growth within each store
+  group_by(store) %>%
+  # Sort by year to ensure proper sequence
+  arrange(year) %>%
+  mutate(
+    # Calculate year-over-year sales growth percentage
+    yoy_sales_growth = (total_annual_sales / lag(total_annual_sales) - 1) * 100,
+    # Calculate year-over-year weekly sales growth
+    yoy_weekly_growth = (mean_weekly_sales / lag(mean_weekly_sales) - 1) * 100
+  ) %>%
+  ungroup()
+  store_growth_analysis_data <- store_growth_analysis %>%
+    select(store, year, yoy_sales_growth,yoy_weekly_growth)%>%
+    filter(year %in% c(2011, 2012))
+
+# View the growth analysis
+view(store_growth_analysis_data)
+
+#Year-over-Year Sales Growth by Store
+growth_plot <- ggplot(store_growth_analysis_data, 
+                     aes(x = as.factor(store), y = yoy_sales_growth, fill = yoy_sales_growth > 0)) +
+  geom_col() +
+  labs(title = "Year-over-Year Sales Growth by Store",
+       x = "Store ID", y = "Year-over-Year Growth (%)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_fill_manual(values = c("TRUE" = "darkgreen", "FALSE" = "darkgrey"),
+                    name = "Positive Growth")
+
+growth_plot
+
+```
+<br><br>
+### Year-over-Year Sales Growth Analysis
+
+<b>1. Significant Sales Decline Stores:</b>
+
+  * Stores 35 & 36 experienced a drastic sales deterioration with consecutive year-over-year declines from 2010 through 2012
+  * Stores 13 & 14 showed a sharp sales reduction in 2012, contributing substantially to the overall annual performance drop<br>
+<b>2. Positive Growth Performers:</b>
+
+  * Store 7 demonstrated notable sales improvement from 2010 to 2011, indicating successful growth strategies
+  * Store 38 achieved consistent sales growth from 2010 to 2011, showing positive momentum<br>
+<b>3. Overall Performance Context:</b>
+
+The pronounced declines in Stores 13, 14, 35, and 36 directly contributed to 2012's lower aggregate sales observed in the box plot analysis
+
+
+### Summary
+
+This comprehensive analysis of Walmart's sales data from 2010-2012 across 45 stores reveals significant insights into retail performance drivers, seasonal patterns, and economic influences. The study demonstrates that sales performance is multifaceted, influenced by both internal operational factors and external economic conditions.
+
+### Key Findings
+
+#### 1. Sales Performance Patterns
+
+Peak Performance: 2011 represented the strongest sales year across the store network
+Concerning Decline: 2012 showed significant sales degradation, with a 7.6% average decrease from 2011 levels
+Store Variability: Performance varied dramatically across locations, with top-performing stores generating 3-4x more revenue than bottom performers
+
+#### 2. Critical Underperforming Stores
+
+Persistent Issues: Stores 33, 14, 35, and 36 demonstrated consistent performance challenges
+Store 33: Consistently ranked lowest in annual sales across all three years
+Stores 14 & 35: Showed progressive sales deterioration from 2010-2012
+Store 36: Exhibited atypical correlation patterns with economic indicators
+
+#### 3. Economic Factor Correlations
+
+Temperature: Generally negative correlation with sales (-0.2 to -0.4 range), suggesting seasonal shopping patterns
+CPI: Mixed impacts with predominantly positive correlations, except Store 36 showing strong negative correlation (-0.92)
+Fuel Prices: Varied effects across stores, indicating regional sensitivity differences
+Unemployment: Primarily negative correlations, though Stores 35 and 36 showed counter-intuitive positive relationships
+
+
+#### 4. Seasonal and Holiday Impacts
+
+Holiday Premium: Average 15-25% sales increase during holiday weeks across most stores
+Temperature Segments: "Cold" weather periods (30-60°F) showed highest sales consistency
+Quarterly Patterns: Q4 consistently strongest performer due to holiday season
+
+
+### Limitations
+
+Temporal Scope: Limited to 2010-2012 data, missing recent trends and COVID-era impacts
+Geographic Granularity: Store-level analysis without regional clustering
+External Factors: Limited incorporation of local competition, demographic changes, or marketing initiatives
+Data Completeness: Data coverage analysis reveals the sales decline in 2012 Q4 is attributable to incomplete data rather than performance issues. 
+While 2011 has complete 52-week records, 2012 contains only 43 weeks of data, creating artificial declines in the quarterly analysis.
+
+### Future work:
+
+Machine Learning: Implement predictive models for sales forecasting
+Advanced Visualization Development, Interactive Dashboard
+Geospatial Analysis: Map store performance against regional economic indicators
+
+### Conclusion
+
+This analysis demonstrates that Walmart's sales performance is influenced by a complex interplay of store-specific factors, economic conditions, and seasonal patterns. The findings highlight both the resilience of the retail operation and significant opportunities for targeted improvements. By leveraging these insights and pursuing the recommended future work, Walmart can enhance its strategic decision-making, optimize store performance, and maintain competitive advantage in the evolving retail landscape.
+
+The most significant opportunity lies in moving from reactive analysis to predictive, prescriptive analytics that can anticipate performance challenges and recommend specific interventions before they impact revenue.
