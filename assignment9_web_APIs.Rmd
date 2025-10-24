@@ -1,0 +1,163 @@
+---
+title: "Assignment9_web_APIs"
+output: html_document
+date: "2025-10-24"
+author: "Mehreen Ali Gillani"
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+### Step 1: Import libraries 
+```{r libraries}
+library(httr)
+library(jsonlite)
+library(dplyr)
+library(knitr)
+```
+
+
+
+### Step 2: Place New York Times API key
+```{r}
+source("config.R") # My key is saved in config file, put your key here
+api_key <- NYT_API_KEY
+```
+
+
+
+### Step 3: Making API request to fetch data
+
+```{r}
+# Get data
+response <- GET(
+  "https://api.nytimes.com/svc/topstories/v2/technology.json",
+  query = list("api-key" = api_key)
+)
+
+cat("Status:", response$status_code, "\n")
+```
+
+### Step 4: Parsing JSON and creating DataFrame
+
+```{r}
+data <- fromJSON(content(response, "text"))
+
+cat("Top level names:", names(data), "\n")
+cat("Has results:", !is.null(data$results), "\n")
+
+if (!is.null(data$results)) {
+  articles <- data$results
+  cat("Results type:", class(articles), "\n")
+  cat("Results dimensions:", dim(articles), "\n")
+  cat("Column names:", names(articles), "\n")
+  
+  if (nrow(articles) > 0) {
+    cat("\nFirst article title:", articles$title[1], "\n")
+    cat("First article section:", articles$section[1], "\n")
+    cat("First article date:", articles$published_date[1], "\n")
+  }
+}    
+```
+
+### Step 5: Dataframe with only the main columns
+```{r}
+
+# dataframe with only the main columns
+df <- data.frame(
+  title = articles$title,
+  section = articles$section,
+  abstract = articles$abstract,
+  url = articles$url,
+  byline = articles$byline,
+  published_date = as.Date(articles$published_date),
+  item_type = articles$item_type,
+  stringsAsFactors = FALSE
+)
+
+cat("✅ Created simplified DataFrame with", ncol(df), "columns\n")
+cat("📊 Dimensions:", nrow(df), "rows ×", ncol(df), "columns\n\n")
+
+# Show structure
+str(df)
+
+# Save
+write.csv(df, "nyt_technology_data.csv", row.names = FALSE)
+cat("💾 Saved to: nyt_technology_data.csv\n")
+```
+
+### Step 6: Queries regarding dataframe
+```{r}
+# Summary statistics
+cat("\n=== SUMMARY STATISTICS ===\n")
+cat("Total articles:", nrow(df), "\n")
+cat("Date range:", as.character(min(df$published_date)), "to", 
+    as.character(max(df$published_date)), "\n")
+cat("Unique sections:", length(unique(df$section)), "\n")
+
+```
+
+
+```{r}
+# Articles by section
+cat("\n=== ARTICLES BY SECTION ===\n")
+section_counts <- table(df$section)
+print(section_counts)
+cat("Most frequent section:", names(which.max(section_counts)), "\n")
+
+```
+
+```{r}
+# Title length analysis
+cat("\n=== TITLE ANALYSIS ===\n")
+df$title_length <- nchar(df$title)
+cat("Average title length:", round(mean(df$title_length)), "characters\n")
+cat("Longest title:", max(df$title_length), "characters\n")
+cat("Shortest title:", min(df$title_length), "characters\n")
+```
+
+```{r}
+# Find articles containing specific keywords
+cat("\n=== ARTICLES ABOUT AI ===\n")
+ai_articles <- df[grepl("AI|artificial intelligence", df$title, ignore.case = TRUE), ]
+cat("Found", nrow(ai_articles), "articles about AI:\n")
+kable(ai_articles[, c("title", "published_date")])
+
+# Latest articles
+cat("\n=== LATEST 5 ARTICLES ===\n")
+latest_articles <- df[order(df$published_date, decreasing = TRUE), ]
+kable(head(latest_articles[, c("title", "published_date", "section")], 5))
+```
+
+```{r}
+# Find articles containing specific keywords
+cat("\n=== ARTICLES ABOUT AI ===\n")
+ai_articles <- df[grepl("AI|artificial intelligence", df$title, ignore.case = TRUE), ]
+cat("Found", nrow(ai_articles), "articles about AI:\n")
+kable(ai_articles[, c("title", "published_date")])
+
+# Latest articles
+cat("\n=== LATEST 5 ARTICLES ===\n")
+latest_articles <- df[order(df$published_date, decreasing = TRUE), ]
+kable(head(latest_articles[, c("title", "published_date", "section")], 5))
+```
+
+
+
+```{r}
+# Check for missing values
+cat("\n=== MISSING VALUES ===\n")
+missing_summary <- sapply(df, function(x) sum(is.na(x)))
+print(missing_summary)
+
+# Check for empty strings
+cat("\n=== EMPTY STRINGS ===\n")
+empty_strings <- sapply(df, function(x) sum(x == "" | is.na(x)))
+print(empty_strings)
+```
+
