@@ -1,0 +1,317 @@
+---
+title: "Sentiment Analysis Assignment: Extending Text Mining with R"
+author: "Mehreen Ali Gillani"
+output: html_document
+date: "2025-10-29"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Load necessary libraries
+library(tidyverse)
+library(tidytext)
+library(janeaustenr)
+library(stringr)
+library(reshape2)
+library(wordcloud)
+library(textdata)
+```
+
+## 1. Introduction & Base Code Citation
+
+This assignment is based on the sentiment analysis tutorial from *Text Mining with R* by Julia Silge and David Robinson. The primary example code in this document is adapted from **Chapter 2: Sentiment Analysis**.
+
+**Citation:**  
+Silge, Julia, and David Robinson. *Text Mining with R*. O'Reilly Media, 2017. https://www.tidytextmining.com/sentiment.html
+
+The goal is to first recreate the core example from the chapter and then extend it by:
+
+  * 1.  Working with a different corpus.
+  * 2.  Incorporating an additional sentiment lexicon from another R package.
+
+## 2. Recreating the Primary Example
+
+The primary example uses the `janeaustenr` corpus and the `bing` sentiment lexicon to analyze how sentiment changes across the narrative of each of Jane Austen's novels.
+
+### 2.1. Data Preparation and Tokenization
+I begin by converting the Austen books into a tidy text format, one token per row.
+
+```{r primary-setup}
+# Get the Jane Austen book data and add line & chapter numbers
+tidy_books <- austen_books() %>%
+  group_by(book) %>%
+  mutate(
+    linenumber = row_number(),
+    chapter = cumsum(str_detect(text, 
+                                regex("^chapter [\\divxlc]",
+                                      ignore_case = TRUE)))) %>%
+  ungroup() %>%
+  # Tokenize the text into words
+  unnest_tokens(word, text)
+
+# Display the structure of the resulting data frame
+head(tidy_books)
+```
+
+### 2.2. Performing Sentiment Analysis with the `bing` Lexicon
+I now perform an inner join with the `bing` sentiment lexicon to assign a sentiment (positive/negative) to each word.
+
+```{r primary-sentiment}
+# Get the Bing sentiment lexicon
+bing_sentiments <- get_sentiments("bing")
+
+# Join the sentiments to the book words
+jane_austen_sentiment <- tidy_books %>%
+  inner_join(get_sentiments("bing"), relationship = "many-to-many") %>%
+  # Count the occurrences of each sentiment per book and index (80-line segments)
+  count(book, index = linenumber %/% 80, sentiment) %>%
+  # Spread the data to have separate columns for positive and negative
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% 
+  # Calculate net sentiment (positive - negative)
+  mutate(sentiment = positive - negative)
+
+# Display the result
+head(jane_austen_sentiment)
+```
+
+### 2.3. Visualizing the Narrative Arc of Sentiment
+Plot the sentiment across the progression of each novel.
+
+```{r primary-plot}
+ggplot(jane_austen_sentiment, aes(index, sentiment, fill = book)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~book, ncol = 2, scales = "free_x") +
+  labs(title = "Sentiment Arc of Jane Austen's Novels",
+       x = "Narrative Index (80-line segments)",
+       y = "Net Sentiment (Positive - Negative)") +
+  theme_minimal()
+```
+
+
+**Interpretation:** This plot successfully recreates the one from the book, showing how sentiment fluctuates throughout the narrative of each novel, often correlating with plot events.
+
+## 3. Extension 1: A Different Corpus
+
+For the first extension, I will analyze a different corpus: **H.G. Wells's science fiction novels**, also available in the `gutenbergr` package. This provides a contrast in genre and style to Jane Austen's works.
+
+```{r new-corpus-setup}
+# Install and load the gutenbergr package if not already installed
+#install.packages("gutenbergr")
+library(gutenbergr)
+
+# Get H.G. Wells works and filter for specific titles
+hgwells_books <- gutenberg_download(c(35, 36, 149, 3349), meta_fields = "title")
+
+# Process the data similarly to the Austen example
+tidy_hgwells <- hgwells_books %>%
+  group_by(title) %>%
+  mutate(linenumber = row_number()) %>%
+  ungroup() %>%
+  unnest_tokens(word, text)
+
+# Display the titles we are working with
+unique(tidy_hgwells$title)
+```
+
+### 3.1. Sentiment Analysis on H.G. Wells's Novels
+I repeat the sentiment analysis process using the `bing` lexicon on this new corpus.
+
+```{r new-corpus-sentiment}
+hgwells_sentiment <- tidy_hgwells %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(title, index = linenumber %/% 80, sentiment) %>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% 
+  mutate(sentiment = positive - negative)
+
+# Plot the sentiment arc for H.G. Wells's novels
+ggplot(hgwells_sentiment, aes(index, sentiment, fill = title)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~title, ncol = 2, scales = "free_x") +
+  labs(title = "Sentiment Arc of H.G. Wells's Science Fiction Novels",
+       x = "Narrative Index (80-line segments)",
+       y = "Net Sentiment (Positive - Negative)") +
+  theme_minimal()
+```
+
+**Interpretation:** While all novels show negative dominance, The War of the Worlds stands out with negative sentiment, emphasizing its apocalyptic nature. The Lost Continent and The Wandering Jew, though still negative, present more balanced emotional profiles. The Time Machine's plot shows deep, pronounced negative spikes, indicating intense emotional lows throughout its narrative.
+
+#### Calculate total positive and negative sentiments for each book
+```{r}
+
+hgwells_sentiment_totals <- tidy_hgwells %>%
+  inner_join(get_sentiments("bing"), relationship = "many-to-many") %>%
+  count(title, sentiment) %>%
+  group_by(title) %>%
+  mutate(total_words = sum(n),
+         percentage = round(n / total_words * 100, 1)) %>%
+  ungroup()
+
+# Display the sentiment totals
+hgwells_sentiment_totals
+
+# Create a visualization of sentiment distribution
+ggplot(hgwells_sentiment_totals, aes(x = title, y = n, fill = sentiment)) +
+  geom_col(position = "dodge") +
+  geom_text(aes(label = paste0(n, " (", percentage, "%)")), 
+            position = position_dodge(width = 0.9), vjust = -0.5, size = 3) +
+  scale_fill_manual(values = c("negative" = "#F8766D", "positive" = "#00BFC4")) +
+  labs(title = "Total Positive vs Negative Sentiments in H.G. Wells's Novels",
+       x = "Novel",
+       y = "Word Count",
+       fill = "Sentiment") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Calculate overall sentiment ratios
+hgwells_overall_ratio <- hgwells_sentiment_totals %>%
+  select(title, sentiment, n) %>%
+  pivot_wider(names_from = sentiment, values_from = n) %>%
+  mutate(negative_ratio = round(negative / (positive + negative) * 100, 1),
+         positive_ratio = round(positive / (positive + negative) * 100, 1))
+
+hgwells_overall_ratio
+
+```
+
+### Summary of Sentiment Analysis Results
+
+The quantitative analysis reveals striking patterns in sentiment distribution across the four novels. The War of the Worlds emerges as the most negatively charged work, with a substantial 68% of sentiment-carrying words classified as negative—more than double the positive words. This overwhelming negative bias reflects the novel's apocalyptic narrative of human civilization under existential threat.
+
+The Time Machine follows with nearly 60% negative sentiment, consistent with its dystopian vision of humanity's devolved future. The Lost Continent and The Wandering Jew — Volume 11 show more balanced but still negative-leaning distributions, with 56.1% and 54.4% negative sentiment respectively.
+
+Overall, all four works demonstrate a clear predominance of negative sentiment, averaging 59.6% negative words across the corpus. This consistent pattern underscores the darker thematic concerns common to these texts, focusing on existential threats, dystopian futures, and human suffering rather than optimistic resolutions. The sentiment ratios align with the critical and cautionary tones characteristic of early 20th century speculative and philosophical fiction.
+
+## 4. Extension 2: An Additional Sentiment Lexicon
+
+For the second extension, I will incorporate the **`syuzhet`** package, which provides access to the NRC Emotion Lexicon. This lexicon categorizes words into eight basic emotions (anger, fear, anticipation, trust, surprise, sadness, joy, disgust) and two sentiments (positive, negative).
+
+```{r new-lexicon-setup}
+# Install and load the syuzhet package to get the NRC lexicon
+#install.packages("syuzhet")
+library(syuzhet)
+
+# The get_sentiments function from tidytext also supports "nrc"
+nrc_sentiments <- get_sentiments("nrc")
+# Let's see the unique emotions/sentiments in this lexicon
+unique(nrc_sentiments$sentiment)
+```
+
+### 4.1. Emotional Analysis of a Single Novel
+Let's analyze the prevalence of different emotions in H.G. Wells's *The War of the Worlds*.
+
+```{r nrc-analysis}
+# Filter for "The War of the Worlds" and join with NRC lexicon
+nrc_war_of_worlds <- tidy_hgwells %>%
+  filter(title == "The War of the Worlds") %>%
+  inner_join(nrc_sentiments) %>%
+  # We don't want the general "positive" and "negative" from NRC for this part
+  filter(!sentiment %in% c("positive", "negative"))
+
+# Count the emotions
+emotion_counts <- nrc_war_of_worlds %>%
+  count(sentiment, sort = TRUE)
+
+# Plot the emotional profile
+ggplot(emotion_counts, aes(x = reorder(sentiment, n), y = n, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  scale_fill_brewer(palette = "Pastel2")+
+  coord_flip() +
+  labs(title = "Emotional Profile of 'The War of the Worlds' using NRC Lexicon",
+       x = "Emotion",
+       y = "Word Count") +
+  theme_minimal()
+```
+
+
+### 4.2. Comparing Lexicons: `bing` vs. `nrc` (Sentiment)
+I can also compare the overall positive/negative sentiment trajectory using the `nrc` lexicon against our initial `bing`-based analysis for *The War of the Worlds*.
+
+```{r compare-lexicons}
+# Get sentiment using the NRC lexicon (filtering for positive/negative)
+sentiment_nrc <- tidy_hgwells %>%
+  filter(title == "The War of the Worlds") %>%
+  inner_join(get_sentiments("nrc")) %>%
+  filter(sentiment %in% c("positive", "negative")) %>%
+  count(index = linenumber %/% 80, sentiment) %>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% 
+  mutate(sentiment = positive - negative, lexicon = "NRC") %>%  # FIX: Use same column name 'sentiment'
+  select(index, sentiment, lexicon)
+
+# Get sentiment using the Bing lexicon (from our earlier data)
+sentiment_bing <- hgwells_sentiment %>%
+  filter(title == "The War of the Worlds") %>%
+  select(index, sentiment) %>%
+  mutate(lexicon = "Bing")
+
+# Combine the data for plotting
+combined_sentiment <- bind_rows(sentiment_bing, sentiment_nrc)
+
+# Plot the comparison
+ggplot(combined_sentiment, aes(index, sentiment, color = lexicon)) +
+  geom_line(linewidth = 1.2, alpha = 0.7) +
+  facet_wrap(~lexicon, ncol = 1) +
+  labs(title = "Sentiment in 'The War of the Worlds': Bing vs. NRC Lexicon",
+       x = "Narrative Index (80-line segments)",
+       y = "Net Sentiment") +
+  theme_minimal()
+```
+**Interpretation:** The `NRC` and `Bing` lexicons produce different sentiment trajectories. While they often agree on the direction of sentiment shifts (e.g., a peak or a valley), the magnitude and sometimes even the sign can differ. This highlights how the choice of lexicon can influence the results of a sentiment analysis.
+
+
+```{r lexicon-comparison}
+# Calculate percentages for both lexicons
+bing_percentages <- tidy_hgwells %>%
+  filter(title == "The War of the Worlds") %>%
+  inner_join(get_sentiments("bing"), relationship = "many-to-many") %>%
+  count(sentiment) %>%
+  mutate(
+    total_words = sum(n),
+    percentage = round(n / total_words * 100, 1),
+    lexicon = "Bing"
+  )
+
+nrc_percentages <- tidy_hgwells %>%
+  filter(title == "The War of the Worlds") %>%
+  inner_join(get_sentiments("nrc"), relationship = "many-to-many") %>%
+  filter(sentiment %in% c("positive", "negative")) %>%
+  count(sentiment) %>%
+  mutate(
+    total_words = sum(n),
+    percentage = round(n / total_words * 100, 1),
+    lexicon = "NRC"
+  )
+
+# Combine both results
+lexicon_comparison <- bind_rows(bing_percentages, nrc_percentages) %>%
+  select(lexicon, sentiment, n, percentage, total_words) %>%
+  arrange(lexicon, sentiment)
+
+
+# Create a formatted table for better presentation
+library(knitr)
+kable(lexicon_comparison, 
+      caption = "Comparison of Positive/Negative Percentages: Bing vs NRC \n Lexicon for 'The War of the Worlds'",
+      col.names = c("Lexicon", "Sentiment", "Count", "Percentage", "Total Words"))
+
+```
+
+####  Summary of Lexicon Comparison
+
+The comparison reveals significant methodological differences between the two sentiment lexicons. The Bing lexicon classifies The War of the Worlds as substantially more negative (68.0% negative vs. 32.0% positive), portraying the novel as overwhelmingly pessimistic. In contrast, the NRC lexicon presents a more balanced emotional profile (53.7% negative vs. 46.3% positive), suggesting a less extreme narrative tone.
+
+## 5. Conclusion
+
+This assignment successfully replicated the core sentiment analysis example from *Text Mining with R* and extended it in two meaningful ways:
+
+1.  **New Corpus:** Applying the same technique to H.G. Wells's science fiction novels revealed starkly different, more negative sentiment arcs compared to Jane Austen's works, demonstrating how sentiment analysis can reflect genre and thematic content.
+2.  **New Lexicon:** Incorporating the `NRC` Emotion Lexicon allowed for a more nuanced analysis, breaking down the text into specific emotions and comparing its overall sentiment scoring mechanism with the `bing` lexicon. This comparison underscores the importance of understanding the tools and lexicons used in text analysis.
+
+
+I learned that different sentiment lexicons can yield significantly different results, as shown by the Bing lexicon's more pessimistic classification versus the NRC's nuanced emotional profiling. The analysis highlighted how methodological choices in text mining—from corpus selection to lexicon application—fundamentally shape analytical outcomes and literary interpretations.
+
+
+
+
+
+
