@@ -1,0 +1,903 @@
+---
+title: "Assignment 10B"
+author: "Mehreen Ali Gillani"
+date: "2025-11-05"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Nobel Prize Data Analysis - Exploring Patterns of Excellence
+
+#### Introduction
+
+The Nobel Prize represents one of the highest forms of international recognition for intellectual and humanitarian achievement, celebrating extraordinary contributions across physics, chemistry, medicine, literature, peace, and economic sciences. Since their inception in 1901, these prestigious awards have not only honored individual brilliance but have also reflected broader historical, geographical, and institutional patterns in human accomplishment.
+
+This assignment employs data science techniques to analyze the rich dataset provided by the Nobel Prize API, investigating four compelling questions that reveal the hidden narratives behind these celebrated awards. Through systematic analysis of laureate information spanning over a century, we uncover fascinating patterns in global talent migration, institutional excellence, demographic trends, and geographical shifts in scientific and cultural leadership.
+
+**Data Acquisition & API Integration**
+
+```{r load libraries and fetch laureates}
+# Load required libraries
+library(httr)        # For making HTTP requests to the API
+library(jsonlite)    # For parsing JSON data from the API response
+library(dplyr)       # For data manipulation and analysis
+library(purrr)       # For functional programming and working with lists
+library(stringr)     # For string manipulation and pattern matching
+
+# Base API URL
+BASE_URL <- "https://api.nobelprize.org/2.1/"
+# Stores the root URL of the Nobel Prize API that we'll be calling
+
+# Function to get ALL Nobel laureates (handle pagination)
+get_all_nobel_laureates <- function() {
+  # Defines a function that will retrieve ALL Nobel laureates from the API
+  
+  all_laureates <- list()
+  # Creates an empty list to store all the laureate data we'll fetch
+  
+  offset <- 0
+  # Sets starting point - tells the API to start from the first record
+  
+  limit <- 100
+  # Sets batch size - tells the API to return 100 records per request
+  
+  while (TRUE) {
+    # Starts an infinite loop that will continue until we break out of it
+    
+    url <- paste0(BASE_URL, "laureates?offset=", offset, "&limit=", limit)
+    # Constructs the complete API URL with pagination parameters
+    # Example: "https://api.nobelprize.org/2.1/laureates?offset=0&limit=100"
+    
+    response <- GET(url)
+    # Sends an HTTP GET request to the API URL we just built
+    
+    data <- content(response, "parsed")
+    # Extracts and parses the JSON content from the API response into R format
+    
+    if (length(data$laureates) == 0) break
+    # Checks if the current batch contains any laureates
+    # If empty (length == 0), we've reached the end of the data and break the loop
+    
+    all_laureates <- c(all_laureates, data$laureates)
+    # Appends the new batch of laureates to our growing list of all laureates
+    
+    offset <- offset + limit
+    # Increases the offset by the limit to get the next batch of records
+    # Example: After first batch, offset becomes 100 to get records 101-200
+    
+    # Safety break to avoid infinite loops
+    if (offset > 1000) break
+    # Emergency break - if we've requested more than 1000 records, stop
+    # This prevents infinite loops if something goes wrong with the API
+  }
+  
+  return(all_laureates)
+  # Returns the complete list containing all Nobel laureates we fetched
+}
+
+# Get all data
+cat("Fetching all Nobel laureates...\n")
+# Prints a message to the console to show the user what's happening
+
+all_laureates <- get_all_nobel_laureates()
+# Calls our function and stores the result in a variable called 'all_laureates'
+
+cat("Total laureates fetched:", length(all_laureates), "\n\n")
+# Prints the total number of laureates retrieved, followed by blank lines
+```
+
+**Brain Drain Analysis**
+
+```{r}
+# 🌍 BRAIN DRAIN ANALYSIS: Nobel Laureate Migration Patterns
+# ==========================================================
+cat("Research Question 1: Which countries experienced the greatest 'brain drain' of Nobel talent?\n")
+cat("Definition: Laureates born in one country but awarded as citizens of another\n\n")
+
+# Initialize data structures
+lost_laureates <- list()
+migration_stats <- list(
+  total_processed = 0,
+  skipped_no_birth_data = 0,
+  skipped_no_prize_data = 0,
+  skipped_no_country_data = 0,
+  valid_cases = 0
+)
+
+cat("📊 Data Processing Pipeline:\n")
+
+for (laureate in all_laureates) {
+  migration_stats$total_processed <- migration_stats$total_processed + 1
+  
+  # Extract birth country with robust error handling
+  birth_country <- tryCatch({
+    laureate$birth$place$country$en
+  }, error = function(e) {
+    migration_stats$skipped_no_birth_data <- migration_stats$skipped_no_birth_data + 1
+    return(NULL)
+  })
+  
+  # Validate birth country data
+  if (is.null(birth_country) || birth_country == "") next
+  
+  # Check for prize data
+  if (is.null(laureate$nobelPrizes) || length(laureate$nobelPrizes) == 0) {
+    migration_stats$skipped_no_prize_data <- migration_stats$skipped_no_prize_data + 1
+    next
+  }
+  
+  prize <- laureate$nobelPrizes[[1]]
+  citizen_country <- NULL
+  
+  # Extract citizenship country from affiliations
+  if (!is.null(prize$affiliations) && length(prize$affiliations) > 0) {
+    for (affil in prize$affiliations) {
+      if (!is.null(affil$country) && !is.null(affil$country$en)) {
+        citizen_country <- affil$country$en
+        break
+      }
+    }
+  }
+  
+  # Validate we have both countries and they're different
+  if (is.null(citizen_country) || citizen_country == "" || birth_country == citizen_country) {
+    migration_stats$skipped_no_country_data <- migration_stats$skipped_no_country_data + 1
+    next
+  }
+  
+  migration_stats$valid_cases <- migration_stats$valid_cases + 1
+  
+  # Store the migration data
+  laureate_name <- ifelse(!is.null(laureate$fullName$en), laureate$fullName$en, "Unknown Name")
+  
+  if (!birth_country %in% names(lost_laureates)) {
+    lost_laureates[[birth_country]] <- list()
+  }
+  
+  lost_laureates[[birth_country]] <- c(lost_laureates[[birth_country]], list(list(
+    name = laureate_name,
+    born_in = birth_country,
+    citizen_of = citizen_country,
+    category = ifelse(!is.null(prize$category$en), prize$category$en, "Unknown"),
+    year = ifelse(!is.null(prize$awardYear), prize$awardYear, "Unknown")
+  )))
+}
+
+cat("\n🎯 MIGRATION ANALYSIS RESULTS\n")
+
+if (length(lost_laureates) > 0) {
+  # Calculate statistics
+  lost_counts <- map_int(lost_laureates, length)
+  sorted_losses <- sort(lost_counts, decreasing = TRUE)
+  total_migrations <- sum(lost_counts)
+  
+  # Create beautiful output table
+  cat("🏆 TOP 10 COUNTRIES BY TALENT LOSS\n")
+  cat("─────────────────────────────────\n")
+  cat("| Rank | Country | Lost | Examples |\n")
+  cat("|------|---------|------|----------|\n")
+  
+  for (i in 1:min(10, length(sorted_losses))) {
+    country <- names(sorted_losses)[i]
+    count <- sorted_losses[i]
+    
+    # Get flag emoji
+    flag <- case_when(
+      country == "Germany" ~ "🇩🇪",
+      country == "United Kingdom" ~ "🇬🇧",
+      country == "Canada" ~ "🇨🇦", 
+      country == "France" ~ "🇫🇷",
+      country == "Russia" ~ "🇷🇺",
+      country == "Netherlands" ~ "🇳🇱",
+      TRUE ~ "🌍"
+    )
+    
+    examples <- map_chr(lost_laureates[[country]][1:min(2, count)], "name")
+    examples_str <- paste(examples, collapse = ", ")
+    
+    if (i == 1) {
+      cat("| **", i, "** | ", flag, " **", country, "** | **", count, "** | ", examples_str, " |\n", sep = "")
+    } else {
+      cat("| ", i, " | ", flag, " ", country, " | ", count, " | ", examples_str, " |\n", sep = "")
+    }
+  }
+  
+  cat("\n")
+  
+  # Key insights
+  top_loser <- names(sorted_losses)[1]
+  top_count <- sorted_losses[1]
+  
+  cat("💡 KEY FINDINGS:\n")
+  cat("• **Primary Source**: ", top_loser, " lost the most talent (", top_count, " laureates)\n", sep = "")
+  cat("• **Migration Rate**: ", round(total_migrations / migration_stats$valid_cases * 100, 1), "% of analyzable laureates changed countries\n", sep = "")
+  cat("• **Global Impact**: ", length(lost_laureates), " countries experienced Nobel talent drain\n\n", sep = "")
+  
+  # Additional insights
+  if (length(sorted_losses) >= 3) {
+    cat("📊 ADDITIONAL INSIGHTS:\n")
+    cat("• Top 3 countries account for ", round(sum(sorted_losses[1:3]) / total_migrations * 100, 1), "% of all talent loss\n", sep = "")
+    cat("• Average loss per country: ", round(mean(lost_counts), 1), " laureates\n", sep = "")
+    cat("• Median loss: ", round(median(lost_counts), 1), " laureates\n\n", sep = "")
+  }
+  
+} else {
+  cat("❌ No international migrations detected in the dataset.\n")
+  cat("This could indicate data quality issues or methodological limitations.\n\n")
+}
+
+# 🔍 DATA QUALITY REPORT
+# ======================
+
+cat("• Total laureates processed: ", migration_stats$total_processed, "\n", sep = "")
+cat("• Skipped (incomplete country data): ", migration_stats$skipped_no_country_data, "\n", sep = "")
+cat("• Final migration count: ", sum(unlist(lapply(lost_laureates, length))), "\n", sep = "")
+cat("• Overall data quality: ", round(migration_stats$valid_cases / migration_stats$total_processed * 100, 1), "% usable\n\n", sep = "")
+
+```
+```{r}
+cat("\n🎓 Question 2: TOP INSTITUTIONS BY NOBEL LAUREATES PRODUCED\n")
+
+# First, create the institution_df dataframe
+institution_counts <- list()
+
+for (laureate in all_laureates) {
+  if (!is.null(laureate$nobelPrizes)) {
+    for (prize in laureate$nobelPrizes) {
+      if (!is.null(prize$affiliations) && length(prize$affiliations) > 0) {
+        for (affiliation in prize$affiliations) {
+          if (!is.null(affiliation$name) && !is.null(affiliation$name$en)) {
+            institution_name <- affiliation$name$en
+            
+            if (grepl("University|Institute|College|School", institution_name, ignore.case = TRUE)) {
+              # Standardize institution names
+              if (grepl("Harvard", institution_name)) institution_name <- "Harvard University"
+              if (grepl("University of California", institution_name)) institution_name <- "University of California"
+              if (grepl("University of Cambridge", institution_name)) institution_name <- "University of Cambridge"
+              if (grepl("Massachusetts Institute", institution_name)) institution_name <- "Massachusetts Institute of Technology (MIT)"
+              if (grepl("Stanford", institution_name)) institution_name <- "Stanford University"
+              if (grepl("University of Chicago", institution_name)) institution_name <- "University of Chicago"
+              if (grepl("Princeton", institution_name)) institution_name <- "Princeton University"
+              if (grepl("Columbia", institution_name)) institution_name <- "Columbia University"
+              if (grepl("Yale", institution_name)) institution_name <- "Yale University"
+              if (grepl("Caltech", institution_name)) institution_name <- "California Institute of Technology (Caltech)"
+              
+              if (is.null(institution_counts[[institution_name]])) {
+                institution_counts[[institution_name]] <- 0
+              }
+              institution_counts[[institution_name]] <- institution_counts[[institution_name]] + 1
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+# Create the dataframe
+institution_df <- data.frame(
+  institution = names(institution_counts),
+  laureate_count = unlist(institution_counts),
+  stringsAsFactors = FALSE
+) %>% 
+  filter(laureate_count >= 5) %>%
+  arrange(desc(laureate_count))
+
+for (i in 1:min(15, nrow(institution_df))) {
+  institution <- institution_df$institution[i]
+  count <- institution_df$laureate_count[i]
+  
+  # Determine country and flag
+  country_flag <- case_when(
+    grepl("University of California|Harvard|MIT|Stanford|University of Chicago|Caltech|Columbia|Princeton|Yale|Cornell|Rockefeller|Howard Hughes", institution) ~ "🇺🇸 USA",
+    grepl("University of Cambridge|University of Oxford", institution) ~ "🇬🇧 UK",
+    grepl("Berlin University", institution) ~ "🇩🇪 Germany",
+    TRUE ~ "🌍 International"
+  )
+  
+  # Clean institution name for display
+  display_name <- case_when(
+    institution == "Massachusetts Institute of Technology (MIT)" ~ "MIT",
+    institution == "California Institute of Technology (Caltech)" ~ "Caltech",
+    institution == "Howard Hughes Medical Institute" ~ "Howard Hughes Med Institute",
+    TRUE ~ institution
+  )
+  
+  if (i == 1) {
+    cat("| 🥇 **", i, "** | **", display_name, "** | ", country_flag, " | **", count, "** |\n", sep = "")
+  } else if (i == 2) {
+    cat("| 🥈 **", i, "** | **", display_name, "** | ", country_flag, " | **", count, "** |\n", sep = "")
+  } else if (i == 3) {
+    cat("| 🥉 **", i, "** | **", display_name, "** | ", country_flag, " | **", count, "** |\n", sep = "")
+  } else {
+    cat("| ", i, " | ", display_name, " | ", country_flag, " | ", count, " |\n", sep = "")
+  }
+}
+
+cat("\n")
+
+# Key insights section
+if (nrow(institution_df) >= 2) {
+  top_institution <- institution_df$institution[1]
+  top_count <- institution_df$laureate_count[1]
+  second_institution <- institution_df$institution[2]
+  second_count <- institution_df$laureate_count[2]
+  
+  cat("💡 KEY INSIGHTS:\n")
+  cat("• **Leading Institution**: ", top_institution, " leads with ", top_count, " Nobel laureates\n", sep = "")
+  cat("• **Close Competitor**: ", second_institution, " follows closely with ", second_count, " laureates\n", sep = "")
+  cat("• **Elite Group**: Only ", nrow(institution_df), " institutions have produced 5+ Nobel laureates\n\n", sep = "")
+}
+
+# Geographic distribution
+if (nrow(institution_df) > 0) {
+  cat("🌎 GEOGRAPHIC DISTRIBUTION\n")
+  cat("| Region | Institutions in Top 15 | Total Laureates | Market Share |\n")
+  cat("|--------|------------------------|-----------------|-------------|\n")
+  
+  top_15 <- head(institution_df, 15)
+  us_institutions <- top_15 %>% filter(grepl("University of California|Harvard|MIT|Stanford|University of Chicago|Caltech|Columbia|Princeton|Yale|Cornell|Rockefeller|Howard Hughes", institution))
+  uk_institutions <- top_15 %>% filter(grepl("University of Cambridge|University of Oxford", institution))
+  
+  us_total <- sum(us_institutions$laureate_count)
+  uk_total <- sum(uk_institutions$laureate_count)
+  other_total <- sum(top_15$laureate_count) - us_total - uk_total
+  total_laureates <- sum(top_15$laureate_count)
+  
+  cat("| 🇺🇸 United States | ", nrow(us_institutions), " | ", us_total, " | ", round(us_total/total_laureates*100, 1), "% |\n", sep = "")
+  cat("| 🇬🇧 United Kingdom | ", nrow(uk_institutions), " | ", uk_total, " | ", round(uk_total/total_laureates*100, 1), "% |\n", sep = "")
+  cat("| 🌍 Other | ", nrow(top_15) - nrow(us_institutions) - nrow(uk_institutions), " | ", other_total, " | ", round(other_total/total_laureates*100, 1), "% |\n", sep = "")
+  
+  cat("\n")
+  
+  # Institutional tiers
+  cat("🏅 INSTITUTIONAL TIERS\n")
+  cat("| Tier | Laureate Range | Institutions |\n")
+  cat("|------|----------------|-------------|\n")
+  
+  tier_40_plus <- sum(institution_df$laureate_count >= 40)
+  tier_20_39 <- sum(institution_df$laureate_count >= 20 & institution_df$laureate_count < 40)
+  tier_10_19 <- sum(institution_df$laureate_count >= 10 & institution_df$laureate_count < 20)
+  tier_5_9 <- sum(institution_df$laureate_count >= 5 & institution_df$laureate_count < 10)
+  
+  cat("| Elite (40+) | 40+ laureates | ", tier_40_plus, " institutions |\n", sep = "")
+  cat("| Premier (20-39) | 20-39 laureates | ", tier_20_39, " institutions |\n", sep = "")
+  cat("| Distinguished (10-19) | 10-19 laureates | ", tier_10_19, " institutions |\n", sep = "")
+  cat("| Notable (5-9) | 5-9 laureates | ", tier_5_9, " institutions |\n", sep = "")
+  
+  cat("\n")
+}  else {
+  cat("❌ No institution data found with 5+ laureates.\n")
+}
+```
+
+
+**Age Distribution Analysis**
+
+```{r}
+cat("\n === QUESTION 3: What's the average age of Nobel laureates by category? === \n")
+
+
+category_ages <- list()
+# Create empty list to store ages organized by category
+category_data <- data.frame()
+# Create empty data frame for detailed analysis
+
+for (laureate in all_laureates) {
+  # Loop through each Nobel laureate
+  
+  if (!is.null(laureate$birth) && !is.null(laureate$birth$date) && 
+      !is.null(laureate$nobelPrizes)) {
+    # Only process laureates with complete data: birth date AND prize info
+    
+    birth_date <- laureate$birth$date
+    # Extract birth date (e.g., "1901-05-15")
+    
+    birth_year <- as.numeric(str_split(birth_date, "-")[[1]][1])
+    # Split date by "-" and take first part (year), convert to number
+    
+    if (is.na(birth_year) || birth_year < 1700 || birth_year > 2020) next
+    # Skip if birth year is invalid: not a number, too old, or future date
+    
+    for (prize in laureate$nobelPrizes) {
+      # Some laureates have multiple prizes (e.g., Marie Curie)
+      
+      prize_year <- as.numeric(prize$awardYear)
+      # Extract prize year and convert to number
+      category <- prize$category$en
+      # Extract category name in English
+      
+      if (is.na(prize_year) || prize_year < 1901) next
+      # Skip if prize year is invalid (Nobel started in 1901)
+      
+      age <- prize_year - birth_year
+      # Calculate age when award was received
+      
+      if (age >= 20 && age <= 100) {
+        # Only include reasonable ages (exclude outliers)
+        
+        if (is.null(category_ages[[category]])) {
+          category_ages[[category]] <- numeric()
+        }
+        # Create empty numeric vector for this category if it doesn't exist
+        
+        category_ages[[category]] <- c(category_ages[[category]], age)
+        # Add this age to the category's age list
+        
+        # Also add to data frame for additional analysis
+        category_data <- rbind(category_data, data.frame(
+          category = category,
+          age = age,
+          year = prize_year,
+          name = ifelse(!is.null(laureate$fullName$en), laureate$fullName$en, "Unknown"),
+          stringsAsFactors = FALSE
+        ))
+        # Store detailed info for later analysis: category, age, year, name
+      }
+    }
+  }
+}
+
+# Calculate summary statistics by category
+age_summary <- map_dfr(names(category_ages), function(cat) {
+  # For each category, calculate statistics
+  
+  ages <- category_ages[[cat]]
+  # Get all ages for this category
+  
+  data.frame(
+    category = cat,
+    avg_age = round(mean(ages), 1),      # Average age
+    median_age = round(median(ages), 1), # Middle value
+    min_age = min(ages),                 # Youngest
+    max_age = max(ages),                 # Oldest
+    count = length(ages),                # Sample size
+    stringsAsFactors = FALSE
+  )
+}) %>% arrange(avg_age)
+# Sort categories by average age (youngest first)
+
+cat("AVERAGE AGE OF NOBEL LAUREATES BY CATEGORY: \n")
+for (i in 1:nrow(age_summary)) {
+  # Print formatted results for each category
+  cat(i, ". ", age_summary$category[i], ": ", age_summary$avg_age[i], 
+      " years (median: ", age_summary$median_age[i], ")\n", sep = "")
+  cat("    Range: ", age_summary$min_age[i], "-", age_summary$max_age[i], 
+      " years | Based on ", age_summary$count[i], " laureates\n\n", sep = "")
+}
+
+# Find youngest and oldest laureates overall
+youngest <- category_data %>% arrange(age) %>% head(5)
+# Sort by age ascending, take top 5
+oldest <- category_data %>% arrange(desc(age)) %>% head(5)
+# Sort by age descending, take top 5
+
+cat("YOUNGEST NOBEL LAUREATES: \n")
+
+for (i in 1:nrow(youngest)) {
+  cat(i, ". ", youngest$name[i], " (", youngest$category[i], "): ", 
+      youngest$age[i], " years in ", youngest$year[i], "\n", sep = "")
+}
+
+cat("\nOLDEST NOBEL LAUREATES: \n")
+
+for (i in 1:nrow(oldest)) {
+  cat(i, ". ", oldest$name[i], " (", oldest$category[i], "): ", 
+      oldest$age[i], " years in ", oldest$year[i], "\n", sep = "")
+}
+
+# Additional analysis: Age trends over time
+cat("\n--- Age Trends Over Time ---\n")
+recent_data <- category_data %>% filter(year >= 2000)
+# Data from year 2000 onwards
+older_data <- category_data %>% filter(year < 2000)
+# Data before year 2000
+
+if (nrow(recent_data) > 0 && nrow(older_data) > 0) {
+  cat("Average age before 2000:", round(mean(older_data$age), 1), "years\n")
+  cat("Average age since 2000:", round(mean(recent_data$age), 1), "years\n")
+  cat("Change:", round(mean(recent_data$age) - mean(older_data$age), 1), "years\n")
+  # Calculate how much older laureates have become over time
+}
+```
+
+**Geographic Distribution & Historical Trends Analysis**
+
+```{r}
+cat("\n === QUESTION 4: How has the geographic distribution of Nobel prizes changed over time? === \n\n")
+
+# Analyze by decades
+decade_data <- list()      # Store counts by decade and country
+country_totals <- list()   # Store overall counts by country
+
+for (laureate in all_laureates) {
+  if (!is.null(laureate$nobelPrizes)) {
+    for (prize in laureate$nobelPrizes) {
+      if (!is.null(prize$awardYear)) {
+        year <- as.numeric(prize$awardYear)
+        decade <- floor(year / 10) * 10
+        # Convert year to decade: 1995 → 1990, 2003 → 2000
+        
+        # Get country from affiliation
+        country <- NULL
+        if (!is.null(prize$prizeAffiliation) && !is.null(prize$prizeAffiliation$country)) {
+          country <- prize$prizeAffiliation$country$en
+        } else if (!is.null(prize$affiliations) && length(prize$affiliations) > 0) {
+          for (affil in prize$affiliations) {
+            if (!is.null(affil$country)) {
+              country <- affil$country$en
+              break
+            }
+          }
+        }
+        # Extract country using same method as Question 1
+        
+        if (!is.null(country) && country != "") {
+          # Initialize decade if needed
+          if (is.null(decade_data[[as.character(decade)]])) {
+            decade_data[[as.character(decade)]] <- list()
+          }
+          # Create empty list for this decade if it doesn't exist
+          
+          # Initialize country count for this decade
+          if (is.null(decade_data[[as.character(decade)]][[country]])) {
+            decade_data[[as.character(decade)]][[country]] <- 0
+          }
+          # Create counter for this country in this decade if it doesn't exist
+          
+          decade_data[[as.character(decade)]][[country]] <- 
+            decade_data[[as.character(decade)]][[country]] + 1
+          # Increment count for this country in this decade
+            
+          # Also track overall totals
+          if (is.null(country_totals[[country]])) {
+            country_totals[[country]] <- 0
+          }
+          country_totals[[country]] <- country_totals[[country]] + 1
+          # Increment overall count for this country
+        }
+      }
+    }
+  }
+}
+
+cat("GEOGRAPHIC DISTRIBUTION OF NOBEL PRIZES BY DECADE: \n")
+
+# Analyze each decade
+decades <- sort(as.numeric(names(decade_data)))
+# Get all decades with data and sort chronologically
+
+for (decade in decades) {
+  if (decade >= 1900) {  # Only show from 1900 onwards (Nobel started 1901)
+    decade_counts <- unlist(decade_data[[as.character(decade)]])
+    # Convert nested list to simple named vector: c("USA" = 25, "UK" = 10)
+    
+    top_countries <- names(sort(decade_counts, decreasing = TRUE))[1:5]
+    # Get top 5 country names sorted by count (highest first)
+    
+    cat(decade, "s:\n", sep = "")
+    for (i in 1:length(top_countries)) {
+      country <- top_countries[i]
+      count <- decade_counts[country]
+      # Get count for this country
+      
+      cat("  ", i, ". ", country, ": ", count, " prizes", sep = "")
+      
+      # Show percentage if significant
+      total_decade_prizes <- sum(decade_counts)
+      percentage <- round((count / total_decade_prizes) * 100, 1)
+      if (percentage >= 10) {
+        cat(" (", percentage, "%)", sep = "")
+      }
+      # Only show percentage if country has ≥10% of decade's prizes
+      cat("\n")
+    }
+    cat("  Total prizes in decade: ", total_decade_prizes, "\n\n", sep = "")
+  }
+}
+
+# Overall top countries
+cat("OVERALL TOP COUNTRIES (ALL TIME): \n")
+
+overall_counts <- sort(unlist(country_totals), decreasing = TRUE)
+# Sort all countries by total prize count
+
+for (i in 1:min(10, length(overall_counts))) {
+  country <- names(overall_counts)[i]
+  count <- overall_counts[i]
+  percentage <- round((count / length(all_laureates)) * 100, 1)
+  cat(i, ". ", country, ": ", count, " prizes (", percentage, "%)\n", sep = "")
+}
+
+# Analyze dominance trends
+cat("\n--- DOMINANCE ANALYSIS ---\n")
+# Calculate US share over time
+us_dominance <- data.frame()
+for (decade in decades) {
+  if (decade >= 1920) {  # US became significant after WWI
+    decade_counts <- unlist(decade_data[[as.character(decade)]])
+    total_prizes <- sum(decade_counts)
+    us_prizes <- ifelse("USA" %in% names(decade_counts), decade_counts[["USA"]], 0)
+    # Handle case where US has no prizes in a decade
+    us_percentage <- round((us_prizes / total_prizes) * 100, 1)
+    
+    us_dominance <- rbind(us_dominance, data.frame(
+      decade = decade,
+      us_prizes = us_prizes,
+      total_prizes = total_prizes,
+      us_percentage = us_percentage
+    ))
+  }
+}
+
+cat("US Dominance in Nobel Prizes:\n")
+for (i in 1:nrow(us_dominance)) {
+  cat(us_dominance$decade[i], "s: ", us_dominance$us_percentage[i], "% (", 
+      us_dominance$us_prizes[i], "/", us_dominance$total_prizes[i], " prizes)\n", sep = "")
+}
+
+# Emerging countries in recent decades
+cat("\n--- EMERGING COUNTRIES (Last 30 years) ---\n")
+recent_decades <- c(1990, 2000, 2010, 2020)
+for (decade in recent_decades) {
+  if (as.character(decade) %in% names(decade_data)) {
+    cat(decade, "s - New countries winning first prizes:\n", sep = "")
+    decade_counts <- unlist(decade_data[[as.character(decade)]])
+    
+    # Compare with previous decades to find new countries
+    previous_countries <- c()
+    for (prev_decade in (decade-10):(decade-30)) {
+      # Look back 10-30 years to see if country existed before
+      if (as.character(prev_decade) %in% names(decade_data)) {
+        previous_countries <- c(previous_countries, names(decade_data[[as.character(prev_decade)]]))
+      }
+    }
+    
+    new_countries <- setdiff(names(decade_counts), unique(previous_countries))
+    # Find countries in current decade that weren't in previous decades
+    
+    if (length(new_countries) > 0) {
+      for (country in new_countries[1:min(5, length(new_countries))]) {
+        cat("  • ", country, " (", decade_counts[country], " prizes)\n", sep = "")
+      }
+    } else {
+      cat("  No new countries\n")
+    }
+  }
+}
+```
+
+**What This Analysis Reveals:**
+
+\*\*Historical power shifts \*\* in scientific/cultural leadership US dominance timeline and percentage share over decades
+
+\*\*Globalization trends \*\* new countries entering Nobel scene
+
+\*\*Geopolitical patterns \*\* how world events affect prize distribution
+
+**Geographic & Field Distribution Analysis** (out of curiosity)
+
+```{r}
+
+cat("\n === QUESTION 4-Extended: How has the geographic distribution of Nobel prizes changed over time and field? ===\n")
+
+# Analyze by decades AND fields
+decade_data <- list()           # Store counts by decade and country
+decade_field_data <- list()     # Store counts by decade, country AND field  
+country_totals <- list()        # Store overall counts by country
+field_country_data <- list()    # Store field-specific country distributions
+
+for (laureate in all_laureates) {
+  if (!is.null(laureate$nobelPrizes)) {
+    for (prize in laureate$nobelPrizes) {
+      if (!is.null(prize$awardYear)) {
+        year <- as.numeric(prize$awardYear)
+        decade <- floor(year / 10) * 10
+        category <- prize$category$en  # Extract the Nobel field/category
+        
+        # Get country from affiliation
+        country <- NULL
+        if (!is.null(prize$prizeAffiliation) && !is.null(prize$prizeAffiliation$country)) {
+          country <- prize$prizeAffiliation$country$en
+        } else if (!is.null(prize$affiliations) && length(prize$affiliations) > 0) {
+          for (affil in prize$affiliations) {
+            if (!is.null(affil$country)) {
+              country <- affil$country$en
+              break
+            }
+          }
+        }
+        
+        if (!is.null(country) && country != "" && !is.null(category)) {
+          # Initialize decade if needed
+          if (is.null(decade_data[[as.character(decade)]])) {
+            decade_data[[as.character(decade)]] <- list()
+          }
+          if (is.null(decade_data[[as.character(decade)]][[country]])) {
+            decade_data[[as.character(decade)]][[country]] <- 0
+          }
+          decade_data[[as.character(decade)]][[country]] <- 
+            decade_data[[as.character(decade)]][[country]] + 1
+            
+          # Track by decade AND field
+          decade_field_key <- paste0(decade, "_", category)
+          if (is.null(decade_field_data[[decade_field_key]])) {
+            decade_field_data[[decade_field_key]] <- list()
+          }
+          if (is.null(decade_field_data[[decade_field_key]][[country]])) {
+            decade_field_data[[decade_field_key]][[country]] <- 0
+          }
+          decade_field_data[[decade_field_key]][[country]] <- 
+            decade_field_data[[decade_field_key]][[country]] + 1
+            
+          # Track overall totals
+          if (is.null(country_totals[[country]])) {
+            country_totals[[country]] <- 0
+          }
+          country_totals[[country]] <- country_totals[[country]] + 1
+          
+          # Track field-specific country data
+          if (is.null(field_country_data[[category]])) {
+            field_country_data[[category]] <- list()
+          }
+          if (is.null(field_country_data[[category]][[country]])) {
+            field_country_data[[category]][[country]] <- 0
+          }
+          field_country_data[[category]][[country]] <- 
+            field_country_data[[category]][[country]] + 1
+        }
+      }
+    }
+  }
+}
+
+
+cat("FIELD-SPECIFIC GEOGRAPHIC DISTRIBUTION:\n")
+
+
+fields <- c("Physics", "Chemistry", "Physiology or Medicine", "Literature", "Peace", "Economic Sciences")
+
+for (field in fields) {
+  if (field %in% names(field_country_data)) {
+    field_counts <- unlist(field_country_data[[field]])
+    top_countries <- names(sort(field_counts, decreasing = TRUE))[1:5]
+    
+    cat(field, ":\n")
+    for (i in 1:length(top_countries)) {
+      country <- top_countries[i]
+      count <- field_counts[country]
+      total_field_prizes <- sum(field_counts)
+      percentage <- round((count / total_field_prizes) * 100, 1)
+      
+      cat("  ", i, ". ", country, ": ", count, " prizes (", percentage, "%)\n", sep = "")
+    }
+    cat("  Total ", field, " prizes: ", total_field_prizes, "\n\n", sep = "")
+  }
+}
+
+
+cat("FIELD DOMINANCE BY RECENT DECADES:\n")
+
+
+recent_decades <- c(1990, 2000, 2010, 2020)
+for (decade in recent_decades) {
+  cat(decade, "s Field Leaders:\n", sep = "")
+  
+  for (field in fields) {
+    decade_field_key <- paste0(decade, "_", field)
+    if (decade_field_key %in% names(decade_field_data)) {
+      field_counts <- unlist(decade_field_data[[decade_field_key]])
+      if (length(field_counts) > 0) {
+        top_country <- names(sort(field_counts, decreasing = TRUE))[1]
+        top_count <- field_counts[top_country]
+        total_field_prizes <- sum(field_counts)
+        percentage <- round((top_count / total_field_prizes) * 100, 1)
+        
+        cat("  • ", field, ": ", top_country, " (", top_count, "/", total_field_prizes, 
+            " prizes, ", percentage, "%)\n", sep = "")
+      }
+    }
+  }
+  cat("\n")
+}
+
+# Enhanced dominance analysis by field
+cat("--- US DOMINANCE BY FIELD ---\n")
+field_dominance <- data.frame()
+
+for (field in fields) {
+  if (field %in% names(field_country_data)) {
+    field_counts <- unlist(field_country_data[[field]])
+    total_prizes <- sum(field_counts)
+    us_prizes <- ifelse("USA" %in% names(field_counts), field_counts[["USA"]], 0)
+    us_percentage <- round((us_prizes / total_prizes) * 100, 1)
+    
+    field_dominance <- rbind(field_dominance, data.frame(
+      field = field,
+      us_prizes = us_prizes,
+      total_prizes = total_prizes,
+      us_percentage = us_percentage,
+      stringsAsFactors = FALSE
+    ))
+  }
+}
+
+field_dominance <- field_dominance %>% arrange(desc(us_percentage))
+
+cat("US Dominance by Nobel Field:\n")
+for (i in 1:nrow(field_dominance)) {
+  cat(i, ". ", field_dominance$field[i], ": ", field_dominance$us_percentage[i], 
+      "% (", field_dominance$us_prizes[i], "/", field_dominance$total_prizes[i], " prizes)\n", sep = "")
+}
+
+# Enhanced emerging countries analysis with fields
+cat("\n--- EMERGING COUNTRIES BY FIELD (Last 30 years) ---\n")
+
+for (decade in recent_decades) {
+  if (as.character(decade) %in% names(decade_data)) {
+    cat(decade, "s - First-time winners by field:\n", sep = "")
+    
+    for (field in fields) {
+      decade_field_key <- paste0(decade, "_", field)
+      if (decade_field_key %in% names(decade_field_data)) {
+        field_counts <- unlist(decade_field_data[[decade_field_key]])
+        
+        # Find countries that won in this field for the first time
+        previous_countries <- c()
+        for (prev_decade in (decade-10):(decade-30)) {
+          prev_field_key <- paste0(prev_decade, "_", field)
+          if (prev_field_key %in% names(decade_field_data)) {
+            previous_countries <- c(previous_countries, names(decade_field_data[[prev_field_key]]))
+          }
+        }
+        
+        new_countries <- setdiff(names(field_counts), unique(previous_countries))
+        if (length(new_countries) > 0) {
+          cat("  • ", field, ": ", paste(new_countries, collapse = ", "), 
+              " (", length(new_countries), " new countries)\n", sep = "")
+        }
+      }
+    }
+    cat("\n")
+  }
+}
+```
+
+#### Key Insights from All 4 Questions:
+
+key lessons learned:
+
+**Global Talent Migration**
+
+25.5% of Nobel laureates changed countries, with Germany suffering the biggest "brain drain" (27 lost). This reveals how political instability and opportunity drive intellectual migration.
+
+**American Academic Dominance**
+
+The US produces 39.6% of all Nobel prizes, with University of California leading (43 laureates). This demonstrates how concentrated funding and research ecosystems create excellence hubs.
+
+**Aging of Innovation**
+
+Laureates are now 9.4 years older than before 2000, with Economics requiring the most career maturity (avg. 67 years). This suggests longer paths to breakthrough achievements.
+
+**Geopolitical Power Shifts**
+
+The Nobel landscape shifted from European dominance (1900s) to US supremacy (post-WWII), reflecting broader geopolitical and scientific leadership transitions.
+
+**Institutional Excellence Matters**
+
+9 of top 15 institutions are American, proving that sustained investment in research infrastructure yields long-term returns in breakthrough discoveries.
+
+**Field-Specific Patterns**
+
+Physics recognizes younger talent (avg. 57.7 years) while humanities require lifetime achievement (Literature: 65 years), showing different innovation timelines across disciplines.
+
+**Globalization is Slow but Real**
+
+While US dominance peaked at 76% in the 1990s, recent decades show more countries entering the Nobel arena, indicating gradual global knowledge diffusion.
+
+These lessons reveal how scientific progress intertwines with geopolitics, institutional investment, and global talent flows over centuries.
